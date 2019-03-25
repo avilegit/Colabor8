@@ -1,7 +1,15 @@
 doctype html
 html
   head
-    title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
-  body
+    title= colabor8
+    meta(name="viewport", content="width=device-width, initial-scale=1")
+    meta(name='description', content='#{description}')
+    link(rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css")
+    script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js")
+
+
+    block scripts
+    block styles
+
+  body(style = "padding-top = 70px;")
     block content

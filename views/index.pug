@@ -1,5 +1,25 @@
 extends layout
 
+
+block styles
+  link(rel='stylesheet', href='/stylesheets/room.css')
+  style.
+  p
+    color:red
+  
 block content
-  h1= title
-  p Welcome to #{title}
+  nav#nav.navbar.navbar-inverse.navbar-fixed-top(style="opacity: 0.9;")
+    .container-fluid
+        .navbar-header
+            a.navbar-brand(href="/") #{title}
+            p.navbar-text ##{roomID}
+  #chat(style="opacity: 0.9; margin-right: 1em; width: 25%; height: 10%; position: fixed; right: 0; bottom: 0;")  
+    .panel.panel-success(id='chat-window')
+      ul.list-group(id='chat-messages')
+    form.form-group.has-success(action='' id='chat-form')
+        .input-group
+            input.form-control(type='text' id='chat-input' autocomplete='off')
+            span.input-group-btn
+                button.btn.btn-success(id='chat-send') Send
+
+

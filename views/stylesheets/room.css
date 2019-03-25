@@ -1,0 +1,27 @@
+p{
+    color: red;
+}
+
+#nav {
+    opacity: 0.9;
+}
+.form {
+    height: 15%;
+}
+#chat {
+    opacity: 0.9;
+    margin-right: 1em;
+    width: 25%;
+    height: 90%;
+    position: fixed;
+    right: 0;
+    top: 100;
+}
+
+
+body {
+    padding-top: 70px;
+}
+.row {
+
+}
