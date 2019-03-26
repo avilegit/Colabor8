@@ -15,12 +15,12 @@ var http = require('http');
 
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
-exports.port = port;
 
 /**
  * Create HTTP server.
  */
 
+console.log('starting server')
 var server = http.createServer(app);
 
 const io = require('socket.io')(server)
@@ -28,8 +28,10 @@ const io = require('socket.io')(server)
 //socket io connections 
 
 
-io.on('connection',function(client){
+io.on('connection',function(socket){
   console.log('a user connected');
+
+
   client.on('register', handleRegister)
 
   client.on('join', handleJoin)
@@ -52,6 +54,7 @@ io.on('connection',function(client){
     console.log(err)
   })
 })
+
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -120,3 +123,5 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
+exports.port = port;
+
