@@ -5,7 +5,7 @@
  */
 
 var app = require('../app');
-var client = require ('../client/socket')
+var client = require ('../public/javascripts/socket')
 var debug = require('debug')('colabor8:server');
 var http = require('http');
 
@@ -29,8 +29,8 @@ const io = require('socket.io')(server)
 
 
 io.on('connection',function(socket){
-  console.log('a user connected');
 
+  socket.emit('news',{hello:'world'});
 
   client.on('register', handleRegister)
 
@@ -124,4 +124,5 @@ function onListening() {
   debug('Listening on ' + bind);
 }
 exports.port = port;
+exports.server = server;
 
