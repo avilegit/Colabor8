@@ -5,10 +5,15 @@ block styles
   link(rel='stylesheet', href='./stylesheets/room.css')
 
 block scripts
-  script(type="text/javascript" src = './javascripts/socket.js')
+  script(type="text/javascript" src ='./javascripts/socket.js')
+  script(type="text/javascript" src='/socket.io/socket.io.js')    
+  script('text/javascript').
+    var socket = io();    	
 
-  
-block content
+
+block content 
+
+  label(id="test-label") check
   nav#nav.navbar.navbar-inverse.navbar-fixed-top
     .container-fluid
         .navbar-header
@@ -17,6 +22,7 @@ block content
   #chat
     .panel.panel-success(id='chat-window')
       ul.list-group(id='chat-messages')
+      //.panel.body Panel
     form.form-group.has-success(action='' id='chat-form')
         .input-group
             input.form-control(type='text' id='chat-input' autocomplete='off')

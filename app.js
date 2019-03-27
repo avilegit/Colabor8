@@ -15,11 +15,28 @@ var debug = require('debug')('colabor8:server');
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 
+io.on('connection',function(client){
+    console.log('Client connected', client.id);
+
+    //listens for join event from client side
+    client.on('join',function(data){
+        console.log('data log', data);
+        client.emit('messages','Hello from server');
+    });
+
+    client.on('chat',function(data){
+        io.sockets.emit('chat',data)
+
+    });
+
+
+
+});
+
+
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
-
-
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
