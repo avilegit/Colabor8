@@ -4,12 +4,18 @@ html
     title= colabor8
     meta(name="viewport", content="width=device-width, initial-scale=1")
     meta(name='description', content='#{description}')
+
+    script(src="http://code.jquery.com/jquery-3.3.1.slim.js" integrity="sha256-fNXJFIlca05BIO2Y5zh1xrShK3ME+/lYZ0j+ChxX2DA=" crossorigin="anonymous")
+
     link(rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css")
     script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js")
 
 
-    block scripts
     block styles
+    block scripts
+
 
   body(style = "padding-top = 70px;")
     block content
+
+

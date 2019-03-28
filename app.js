@@ -26,7 +26,7 @@ io.on('connection',function(client){
 
     client.on('chat',function(data){
         io.sockets.emit('chat',data)
-
+        
     });
 
 
