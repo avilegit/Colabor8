@@ -20,16 +20,20 @@ io.on('connection',function(client){
 
     //listens for join event from client side
     client.on('join',function(data){
-        console.log('data log', data);
         client.emit('messages','Hello from server');
+        io.sockets.emit('join', data);
     });
 
     client.on('chat',function(data){
-        io.sockets.emit('chat',data)
-        
+        //everyone BUT the person the client that sends the emit
+        client.broadcast.emit('chat',data)
+
     });
+});
 
+io.on('disconnection',function(clientInformation){
 
+    console.log('Client disconnected');
 
 });
 
