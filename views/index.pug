@@ -22,14 +22,14 @@ block content
             a.navbar-brand(href="/") #{title}
             p.navbar-text ##{roomID}
   #chat
-    .panel.panel-success(id='chat-window')
-      ul.list-group(id='chat-messages')
-      //.panel.body Panel
-    form.form-group.has-success(action='' id='chat-form')
-        .input-group
-            input.form-control(type='text' id='chat-input' autocomplete='off')
-            span.input-group-btn
-                button.btn.btn-success(id='chat-send' type='button') Send
+      .panel.panel-success(id='chat-window')
+          ul.list-group(id='chat-messages')
+      form.form-group.has-success(action='' id='chat-form')
+          .input-group
+              input.form-control(type='text' id='chat-input' autocomplete='off')
+              span.input-group-btn
+                  button.btn.btn-success(id='chat-send' type='button') Send
+                  
   script(type="text/javascript" src ='./javascripts/socket.js')
 
 

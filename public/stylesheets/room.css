@@ -8,19 +8,25 @@
     opacity: 0.9;
     margin-right: 1em;
     width: 25%;
-    height: 10%;
+    height: 90%;
     position: fixed;
     right: 0;
     bottom: 0;
 }
 
-button {
-    position: fixed;
+#chat-window{
+    overflow-y: scroll;
+    height: 85%;
+    margin-top: 0.5em;
 }
+
+/* #button {
+    position: fixed;
+    opacity: 0.9;
+    right: 0;
+    bottom: 0;
+} */
 
 body {
     padding-top: 70px;
-}
-.row {
-
 }

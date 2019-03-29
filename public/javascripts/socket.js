@@ -1,11 +1,11 @@
-//(function($){
 console.log('test');
 
 //Query DOM
 var window = document.getElementById('chat-window'),
-    messages = document.getElementById('chat-messages'),
+    output = document.getElementById('output-chat'),
     input = document.getElementById('chat-input'),
     send = document.getElementById('chat-send'),
+    messages = document.getElementById('chat-messages')
     label = document.getElementById('test-label');
 
 
@@ -17,31 +17,21 @@ socket.on('connect', function(data){
   console.log('client joining');
 
 });
-//if (document.readyState === "complete") {
-//  console.log('done');
 
 send.addEventListener('click',function(){
-  console.log('push');
-  socket.emit('chat', {
-    message: input.value
-  })
-  console.log('push 2');
-
-  label.innerHTML = input.value;
+  if(input.value != ''){
+    socket.emit('chat', {
+      message: input.value
+    })
+  }
 });
-//}
+
 
 //listen for chat events
 
 socket.on('chat', function(data){
 
   console.log('caught callback from server');
-  printToChat(data.message);
+  $('#chat-messages').append('<li class="list-group-item active">' + data.message + '</li>');
+  input.value = '';
 })
-
-function printToChat(text){
-
-  $('#chat-messages').append('<li class="list-group-item">' + text + '</li>');
-
-}
-//});
