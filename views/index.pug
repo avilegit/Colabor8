@@ -10,24 +10,22 @@ block scripts
   script('text/javascript').
     var socket = io();    
 
-
-
-
-
 block content 
   nav#nav.navbar.navbar-inverse.navbar-fixed-top
     .container-fluid
-        .navbar-header
+        .navbar-header(id='navbar-room')
+          ul.list-group(id='room-members')
             a.navbar-brand(href="/") #{title}
             p.navbar-text ##{roomID}
   #chat
       .panel.panel-success(id='chat-window')
-          ul.list-group(id='chat-messages')
+        .feedback(id='feedback')
+        ul.list-group(id='chat-messages')
       form.form-group.has-success(action='' id='chat-form')
           .input-group
-              input.form-control(type='text' id='chat-input' autocomplete='off')
-              span.input-group-btn
-                  button.btn.btn-success(id='chat-send' type='button') Send
+            input.form-control(type='text' id='chat-input' autocomplete='off')
+            span.input-group-btn
+                button.btn.btn-success(id='chat-send' type='button') Send
                   
   script(type="text/javascript" src ='./javascripts/socket.js')
 

@@ -29,14 +29,16 @@ io.on('connection',function(client){
         io.sockets.emit('chat',data)
 
     });
+    client.on('typing',function(data){
+        client.broadcast.emit('typing',data)
+
+    });
+
+    /*client.on('disconnect',function(){
+        console.log('Client disconnected');
+        socket.emit('disconnect');
+    });*/
 });
-
-io.on('disconnection',function(clientInformation){
-
-    console.log('Client disconnected');
-
-});
-
 
 server.listen(port);
 server.on('error', onError);
