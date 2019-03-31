@@ -29,15 +29,16 @@ io.on('connection',function(client){
         io.sockets.emit('chat',data)
 
     });
+    //broadcasts to everyone but sender
     client.on('typing',function(data){
         client.broadcast.emit('typing',data);
 
     });
 
-    /*client.on('disconnect',function(){
+    client.on('disconnect',function(member){
         console.log('Client disconnected');
-        socket.emit('disconnect');
-    });*/
+        io.sockets.emit('disconnect',member);
+    });
 });
 
 server.listen(port);

@@ -9,7 +9,6 @@
   }
 })();
 
-console.log('name',name)
 //Query DOM
 var window = document.getElementById('chat-window'),
     output = document.getElementById('output-chat'),
@@ -45,8 +44,18 @@ send.addEventListener('click',function(){
 socket.on('join', function(new_member){
   console.log('got client name',new_member);
   $('#chat-messages').append('<li class="list-group-item list-group-item-action list-group-item-success">' + new_member + " joined!" + '</li>');
-  //$('#navbar-room').text(new_member);
+  //$('#room-members').append('<li><a>' + new_member + '</a></li>');
+  //document.getElementById('room-members').innerHTML += '<li><a' + new_member + '</a></li>';
 })
+
+socket.on('disconnect', function(removed_member){
+  $('#chat-messages').append('<li class="list-group-item list-group-item-action list-group-item-success">' + removed_member + " disconnected!" + '</li>');
+  //$('#room-members').append('<li><a>' + new_member + '</a></li>');
+  //document.getElementById('room-members').innerHTML += '<li><a' + new_member + '</a></li>';
+})
+
+
+
 
 socket.on('chat', function(data){
 

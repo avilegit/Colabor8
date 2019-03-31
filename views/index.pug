@@ -11,13 +11,33 @@ block scripts
     var socket = io();    
 
 block content 
+  #tracker
+    .jumbotron
+      h3 
+        form(id="IssueInputForm")
+          .form-group
+            label(for="IssueDescInput") Description
+            input(type="text" class="form-control" id="issueDescInput" placeholder="Describe the issue ...")
+          .form-group
+            label(for="IssueSeverityInput") Severity
+            select(id="IssueSeverityInput" class='form-control' placeholder=' ')
+              option(value="Low") Low
+              option(value="Medium") Medium
+              option(value="High") High
+          .form-group
+            label(for="IssueAssignedtoInput") Assigned To
+
+
+
+
+
   nav#nav.navbar.navbar-inverse.navbar-fixed-top
     .container-fluid
         .navbar-header(id='navbar-room')
         ul.nav.navbar-nav(id='room-members')
-          li.active
-            a(href='#') #
-        form.navbar-form.navbar-left
+          li
+            a(href='/', style="font-size:22px") Colabor8
+        form.navbar-form.navbar-right
           .form-group
             input.form-control(type='text', placeholder='Problem ID', name='search')
           button.btn.btn-default(id='submit_search' type='submit') Submit
