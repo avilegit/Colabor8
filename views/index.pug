@@ -14,9 +14,15 @@ block content
   nav#nav.navbar.navbar-inverse.navbar-fixed-top
     .container-fluid
         .navbar-header(id='navbar-room')
-          ul.list-group(id='room-members')
-            a.navbar-brand(href="/") #{title}
-            p.navbar-text ##{roomID}
+        ul.nav.navbar-nav(id='room-members')
+          li.active
+            a(href='#') #
+        form.navbar-form.navbar-left
+          .form-group
+            input.form-control(type='text', placeholder='Problem ID', name='search')
+          button.btn.btn-default(id='submit_search' type='submit') Submit
+
+            //p.navbar-text ##{roomID}
   #chat
       .panel.panel-success(id='chat-window')
         .feedback(id='feedback')

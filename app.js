@@ -30,7 +30,7 @@ io.on('connection',function(client){
 
     });
     client.on('typing',function(data){
-        client.broadcast.emit('typing',data)
+        client.broadcast.emit('typing',data);
 
     });
 
