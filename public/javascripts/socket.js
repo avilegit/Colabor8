@@ -48,7 +48,7 @@ socket.on('join', function(data){
 socket.on('chat', function(data){
 
   console.log('caught callback from server');
-  $('#chat-messages').append('<li class="list-group-item active">' + data.name + ": " + data.message + '</li>');
+  $('#chat-messages').append('<li class="list-group-item">' + data.name + ": " + data.message + '</li>');
 
   //reset text
   input.value = '';

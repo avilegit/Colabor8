@@ -26,7 +26,7 @@ io.on('connection',function(client){
 
     client.on('chat',function(data){
         //everyone BUT the person the client that sends the emit
-        client.broadcast.emit('chat',data)
+        io.sockets.emit('chat',data)
 
     });
 });
