@@ -77,7 +77,7 @@ function newIssue(){
 function loadIssues(){
   console.log('loading issues');
   var issues = JSON.parse(localStorage.getItem('issues'));
-  var issuesList = document.getElementById('issues-list');
+  var issuesList = document.getElementById('issue-list');
 
   issuesList.innerHTML = '';
 
