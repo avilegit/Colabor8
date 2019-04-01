@@ -10,7 +10,7 @@ block scripts
   script('text/javascript').
     var socket = io();    
 
-block content 
+block content
   #tracker
     .jumbotron
       h3 
@@ -25,13 +25,11 @@ block content
               option(value="Medium") Medium
               option(value="High") High
           .form-group
-            label(for="IssueAssignedtoInput") Assigned To
-            select(id="IssueSeverityInput" class='form-control')
+            label(for="IssueAssignedToInput") Assigned To
+            select(id="IssueAssignedToInput" class='form-control')
               option(value="Other") Other
-          button.btn.btn-primary(type = 'button' class='btn btn-primary' id='issue-send') Add
-
-
-
+          button.btn.btn-primary(type = 'button' class='btn btn-primary' id='issue-send' onclick="newIssue()") Add
+    #issues-list
 
 
   nav#nav.navbar.navbar-inverse.navbar-fixed-top
