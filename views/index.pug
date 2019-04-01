@@ -26,6 +26,9 @@ block content
               option(value="High") High
           .form-group
             label(for="IssueAssignedtoInput") Assigned To
+            select(id="IssueSeverityInput" class='form-control')
+              option(value="Other") Other
+          button.btn.btn-primary(type = 'button' class='btn btn-primary' id='issue-send') Add
 
 
 
@@ -51,7 +54,7 @@ block content
           .input-group
             input.form-control(type='text' id='chat-input' autocomplete='off')
             span.input-group-btn
-                button.btn.btn-success(id='chat-send' type='button') Send
+                button.btn.btn-primary(id='chat-send' type='button') Send
                   
   script(type="text/javascript" src ='./javascripts/socket.js')
 
