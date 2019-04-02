@@ -29,9 +29,9 @@ block content
             select(id="IssueAssignedToInput" class='form-control')
               option(value="Other") Other
           button.btn.btn-primary(type = 'button' class='btn btn-primary' id='issue-send' onclick="newIssue()") Add
-    #issues-list
-      .panel.panel(id='issue-window')
-        ul.list-group(id='issue-list')
+  #issues
+    .panel.panel(id='issue-window')
+      ul.list-group(id='issue-list')
 
 
 
@@ -48,14 +48,14 @@ block content
 
             //p.navbar-text ##{roomID}
   #chat
-      .panel.panel-success(id='chat-window')
-        .feedback(id='feedback')
-        ul.list-group(id='chat-messages')
-      form.form-group.has-success(action='' id='chat-form')
-          .input-group
-            input.form-control(type='text' id='chat-input' autocomplete='off')
-            span.input-group-btn
-                button.btn.btn-primary(id='chat-send' type='button') Send
+    .panel.panel-success(id='chat-window')
+      .feedback(id='feedback')
+      ul.list-group(id='chat-messages')
+    form.form-group.has-success(action='' id='chat-form')
+        .input-group
+          input.form-control(type='text' id='chat-input' autocomplete='off')
+          span.input-group-btn
+              button.btn.btn-primary(id='chat-send' type='button') Send
                   
   script(type="text/javascript" src ='./javascripts/socket.js')
 

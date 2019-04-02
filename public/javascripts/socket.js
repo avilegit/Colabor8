@@ -8,7 +8,7 @@
 })();
 
 //Query DOM
-var window = document.getElementById('chat-window'),
+var windows = document.getElementById('chat-window'),
     output = document.getElementById('output-chat'),
     input = document.getElementById('chat-input'),
     send = document.getElementById('chat-send'),
@@ -72,6 +72,7 @@ function newIssue(){
     localStorage.setItem('issues', JSON.stringify(issues));
   }
 
+  loadIssues()
 }
 
 function loadIssues(){
@@ -90,7 +91,7 @@ function loadIssues(){
       var assignedTo = issues[i].assignedTo;
       var status = issues[i].status;
 
-      issuesList.innerHTML +=   '<div class="well">'+
+      $('#issue-list').append('<li class="list-group-item">' + '<div class="well">'+
                                 //'<h6>Issue ID: ' + id + '</h6>'+
                                 '<p><span class="label label-info">' + status + '</span></p>'+
                                 '<h3>' + desc + '</h3>'+
@@ -98,7 +99,17 @@ function loadIssues(){
                                 '<p><span class="glyphicon glyphicon-user"></span> ' + assignedTo + '</p>'+
                                 '<a href="#" onclick="setStatusClosed(\''+id+'\')" class="btn btn-warning">Close</a> '+
                                 '<a href="#" onclick="deleteIssue(\''+id+'\')" class="btn btn-danger">Delete</a>'+
-                                '</div>';
+                                '</div>' + '</li>');
+
+      // issuesList.innerHTML +=   '<div class="well">'+
+      //                           //'<h6>Issue ID: ' + id + '</h6>'+
+      //                           '<p><span class="label label-info">' + status + '</span></p>'+
+      //                           '<h3>' + desc + '</h3>'+
+      //                           '<p><span class="glyphicon glyphicon-time"></span> ' + severity + '</p>'+
+      //                           '<p><span class="glyphicon glyphicon-user"></span> ' + assignedTo + '</p>'+
+      //                           '<a href="#" onclick="setStatusClosed(\''+id+'\')" class="btn btn-warning">Close</a> '+
+      //                           '<a href="#" onclick="deleteIssue(\''+id+'\')" class="btn btn-danger">Delete</a>'+
+      //                           '</div>';
     }
   }
 
