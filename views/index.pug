@@ -13,7 +13,7 @@ block scripts
 block content
   #tracker
     .jumbotron
-      h3 
+      h3 Issue Form
         form(id="IssueInputForm")
           .form-group
             label(for="IssueDescInput") Description
@@ -26,8 +26,12 @@ block content
               option(value="High") High
           .form-group
             label(for="IssueAssignedToInput") Assigned To
-            select(id="IssueAssignedToInput" class='form-control')
-              option(value="Other") Other
+            input(type="text" class="form-control" id="IssueAssignedToInput" placeholder="Assignee")
+            //- select(id="IssueAssignedToInput" class='form-control')
+            //-   option(value="Other") Other
+          //- .form-group
+          //-   label(for="DueDateInput") Due Date
+          //-   datepicker(selected='{this.state.startDate}', onchange='{this.handleChange}')
           button.btn.btn-primary(type = 'button' class='btn btn-primary' id='issue-send' onclick="newIssue()") Add
   #issues
     .panel.panel(id='issue-window')
