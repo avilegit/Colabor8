@@ -41,7 +41,7 @@ socket.on('disconnect', function(removed_member){
 })
 
 socket.on('chat', function(data){
-  $('#chat-messages').append('<li class="list-group-item active">' + data.name + ": " + data.message + '</li>');
+  $('#chat-messages').append('<li class="list-group-item">' + data.name + ": " + data.message + '</li>');
   feedback.innerHTML = '';
   //reset text
   input.value = '';
@@ -52,13 +52,17 @@ function newIssue(){
   var i_description = document.getElementById('issueDescInput').value;
   var i_severity = document.getElementById('IssueSeverityInput').value;
   var i_assignedTo = document.getElementById('IssueAssignedToInput').value;
+  var i_issueDescription = document.getElementById('IssueDescriptionInput').value;
   var i_issueStatus = 'Open';
+  var i_issueID = '';//require('uuid/v1')();
 
   var newIssue = {
     description : i_description,
     severity : i_severity,
     assignedTo : i_assignedTo,
-    issueStatus : i_issueStatus
+    issueStatus : i_issueStatus,
+    issueDescription: i_issueDescription,
+    issueID : i_issueID
   }
 
   //this can be ported to mongodb for later
@@ -72,7 +76,13 @@ function newIssue(){
     localStorage.setItem('issues', JSON.stringify(issues));
   }
 
+  
   loadIssues()
+
+  document.getElementById('issueDescInput').value = '';
+  document.getElementById('IssueSeverityInput').value = '';
+  document.getElementById('IssueAssignedToInput').value = '';
+  document.getElementById('IssueDescriptionInput').value = '';
 }
 
 function loadIssues(){
@@ -90,27 +100,30 @@ function loadIssues(){
       var severity = issues[i].severity;
       var assignedTo = issues[i].assignedTo;
       var status = issues[i].status;
+      var issuedesc = issues[i].issueDescription;
+      var issuesID = issues[i].issueID;
 
-      $('#issue-list').append('<li class="list-group-item">' + '<div class="well">'+
-                                //'<h6>Issue ID: ' + id + '</h6>'+
+      $('#issue-list').append('<li class="list-group-item">' + '<div class="card">' + '<div class="card-body">' +
+                                '<h6>Issue ID: ' + issuesID + '</h6>'+
                                 '<p><span class="label label-info">' + status + '</span></p>'+
-                                '<h3>' + desc + '</h3>'+
-                                '<p><span class="glyphicon glyphicon-time"></span> ' + severity + '</p>'+
-                                '<p><span class="glyphicon glyphicon-user"></span> ' + assignedTo + '</p>'+
+                                '<h3><i class="far fa-comment-alt"></i>' + ' ' + desc + '</h3>'+
+                                '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
+                                '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
                                 '<a href="#" onclick="setStatusClosed(\''+id+'\')" class="btn btn-warning">Close</a> '+
                                 '<a href="#" onclick="deleteIssue(\''+id+'\')" class="btn btn-danger">Delete</a>'+
+                                '</div>'+ 
+                                '<div class="card-footer">' + issuedesc + '</div>' +                            
                                 '</div>' + '</li>');
 
-      // issuesList.innerHTML +=   '<div class="well">'+
-      //                           //'<h6>Issue ID: ' + id + '</h6>'+
-      //                           '<p><span class="label label-info">' + status + '</span></p>'+
-      //                           '<h3>' + desc + '</h3>'+
-      //                           '<p><span class="glyphicon glyphicon-time"></span> ' + severity + '</p>'+
-      //                           '<p><span class="glyphicon glyphicon-user"></span> ' + assignedTo + '</p>'+
-      //                           '<a href="#" onclick="setStatusClosed(\''+id+'\')" class="btn btn-warning">Close</a> '+
-      //                           '<a href="#" onclick="deleteIssue(\''+id+'\')" class="btn btn-danger">Delete</a>'+
-      //                           '</div>';
     }
+  }
+  else{
+    $('#issue-list').append('<li class="list-group-item">' + '<div class="card">' + '<div class="card text-white bg-success mb-3">' +
+                                '<div class="card-body">' + 
+                                '<h5 class="card-title">' + 'No issues!' + '</h5>' + 
+                                '</div>' +                                                       
+                                '</div>' + 
+                                '</div>' + '</li>');
   }
 
 }

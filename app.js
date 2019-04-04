@@ -15,6 +15,7 @@ var debug = require('debug')('colabor8:server');
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 
+
 /*var MongoClient = require('mongodb').MongoClient;
 MongoClient.connect("mongodb://localhost:3000/exampleDb", function(err, db) {
     if(!err) {

@@ -10,6 +10,18 @@
     height: 40%;
 }
 
+.divider{
+    height:15px;
+}
+#basic-addon {
+    width:110px;
+    text-align:left;
+}
+.input-group-text{
+    width:110px;
+    text-align:left;
+}
+
 #issues{
 
     height: 90%;
@@ -38,19 +50,22 @@
 
 #chat-window{
     overflow-y: scroll;
+    scroll-behavior: auto;
     height: 85%;
     margin-top: 0.5em;
 }
 #tracker{
     width: 35%;
     margin-left: 1em;
-    margin-top: 0.5em;
+    margin-top: 0.8em;
+    position: fixed;
 }
 #IssueInputForm{
 
     width:40%;
     margin-left: 1em;
     margin-right: 1em;
+    
 
 }
 .input-group{
