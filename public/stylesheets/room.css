@@ -42,17 +42,22 @@
     margin-top: 0.5em;
 }
 #tracker{
-    width: 40%;
+    width: 35%;
     margin-left: 1em;
     margin-top: 0.5em;
 }
 #IssueInputForm{
 
-    width:90%;
+    width:40%;
     margin-left: 1em;
     margin-right: 1em;
 
 }
+.input-group{
+
+    width: 100%;
+
+}
 body {
-    padding-top: 70px;
+    padding-top: 0px;
 }
