@@ -15,6 +15,8 @@ var debug = require('debug')('colabor8:server');
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 
+const uuidv1 = require('uuid/v1');
+
 
 /*var MongoClient = require('mongodb').MongoClient;
 MongoClient.connect("mongodb://localhost:3000/exampleDb", function(err, db) {
@@ -28,7 +30,6 @@ io.on('connection',function(client){
 
     //listens for join event from client side
     client.on('join',function(data){
-        client.emit('messages','Hello from server');
         io.sockets.emit('join', data);
     });
 
@@ -46,6 +47,12 @@ io.on('connection',function(client){
     client.on('disconnect',function(member){
         console.log('Client disconnected');
         io.sockets.emit('disconnect',member);
+    });
+
+    client.on('newIssue',function(client_callback){
+        console.log('new UUID');
+        var id = uuidv1();
+        client_callback(id);
     });
 });
 

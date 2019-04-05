@@ -48,72 +48,142 @@ socket.on('chat', function(data){
 })
 
 function newIssue(){
+  socket.emit('newIssue',function(uuid){
 
-  var i_description = document.getElementById('issueDescInput').value;
-  var i_severity = document.getElementById('IssueSeverityInput').value;
-  var i_assignedTo = document.getElementById('IssueAssignedToInput').value;
-  var i_issueDescription = document.getElementById('IssueDescriptionInput').value;
-  var i_issueStatus = 'Open';
-  var i_issueID = '';//require('uuid/v1')();
+    //callback
+    var i_issueID = uuid;
+    var i_description = document.getElementById('issueDescInput').value;
+    var i_severity = document.getElementById('IssueSeverityInput').value;
+    var i_assignedTo = document.getElementById('IssueAssignedToInput').value;
+    var i_issueDescription = document.getElementById('IssueDescriptionInput').value;
+    var i_issueStatus = 'Open';
 
-  var newIssue = {
-    description : i_description,
-    severity : i_severity,
-    assignedTo : i_assignedTo,
-    issueStatus : i_issueStatus,
-    issueDescription: i_issueDescription,
-    issueID : i_issueID
-  }
+    var newIssue = {
+      description : i_description,
+      severity : i_severity,
+      assignedTo : i_assignedTo,
+      issueStatus : i_issueStatus,
+      issueDescription: i_issueDescription,
+      issueID : i_issueID
+    }
 
-  //this can be ported to mongodb for later
-  if (localStorage.getItem('issues') == null) {
-    var issues = [];
-    issues.push(newIssue);
-    localStorage.setItem('issues', JSON.stringify(issues));
-  } else {
-    var issues = JSON.parse(localStorage.getItem('issues'));
-    issues.push(newIssue);
-    localStorage.setItem('issues', JSON.stringify(issues));
-  }
+    //this can be ported to mongodb for later
+    if (localStorage.getItem('issues') == null) {
+      var issues = [];
+      issues.push(newIssue);
+      localStorage.setItem('issues', JSON.stringify(issues));
+    } else {
+      var issues = JSON.parse(localStorage.getItem('issues'));
+      issues.push(newIssue);
+      localStorage.setItem('issues', JSON.stringify(issues));
+    }
 
-  
-  loadIssues()
+    
+    loadIssues()
 
-  document.getElementById('issueDescInput').value = '';
-  document.getElementById('IssueSeverityInput').value = '';
-  document.getElementById('IssueAssignedToInput').value = '';
-  document.getElementById('IssueDescriptionInput').value = '';
+    document.getElementById('issueDescInput').value = '';
+    document.getElementById('IssueSeverityInput').value = '';
+    document.getElementById('IssueAssignedToInput').value = '';
+    document.getElementById('IssueDescriptionInput').value = '';
+    });
 }
 
+function setStatusClosed(id){
+  var issues = JSON.parse(localStorage.getItem('issues'));
+
+  //gross use db next
+  for(var i =0;i<issues.length;i++){
+    if(issues[i].issueID == id){
+      issues[i].issueStatus = 'Closed';
+      issues.push(issues.splice(i,1)[0]);
+      break;
+    }
+  }
+  localStorage.setItem('issues',JSON.stringify(issues));
+  loadIssues();
+}
+
+function setStatusOpen(id){
+  var issues = JSON.parse(localStorage.getItem('issues'));
+
+  //gross use db next
+  for(var i =0;i<issues.length;i++){
+    if(issues[i].issueID == id){
+      issues[i].issueStatus = 'Open';
+      issues.unshift(issues.splice(i,1)[0]);
+      break;
+    }
+  }
+  localStorage.setItem('issues',JSON.stringify(issues));
+  loadIssues();
+}
+
+function deleteIssue(id){
+
+  var issues = JSON.parse(localStorage.getItem('issues'));
+
+  for(var i =0;i<issues.length;i++){
+    if(issues[i].issueID == id){
+      issues.splice(i,1);
+      break;
+    }
+  }
+  localStorage.setItem('issues',JSON.stringify(issues));
+  loadIssues();
+}
+
+
 function loadIssues(){
-  console.log('loading issues');
   var issues = JSON.parse(localStorage.getItem('issues'));
   var issuesList = document.getElementById('issue-list');
 
   issuesList.innerHTML = '';
 
   //alert(issues.length.toString())
-  if(issues){
+  if(issues.length){
     for (var i = 0; i < issues.length; i++) {
-      var id = issues[i].id;
+      var id = issues[i].issueID;
       var desc = issues[i].description;
       var severity = issues[i].severity;
       var assignedTo = issues[i].assignedTo;
-      var status = issues[i].status;
+      var status = issues[i].issueStatus;
       var issuedesc = issues[i].issueDescription;
       var issuesID = issues[i].issueID;
 
-      $('#issue-list').append('<li class="list-group-item">' + '<div class="card">' + '<div class="card-body">' +
+      if(status == 'Open'){
+        $('#issue-list').append('<li class="list-group-item">' + '<div class="card">' + 
+                                '<div class="card-header">'+ '<h3><i class="far fa-comment-alt"></i>' + ' ' + desc + '</h3>' + '</div>' +
+                                '<div class="card-body">' +
                                 '<h6>Issue ID: ' + issuesID + '</h6>'+
-                                '<p><span class="label label-info">' + status + '</span></p>'+
-                                '<h3><i class="far fa-comment-alt"></i>' + ' ' + desc + '</h3>'+
-                                '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
+                                '<p><i class="fas fa-door-open"></i>' + ' '+ status + '</p>'+
                                 '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
-                                '<a href="#" onclick="setStatusClosed(\''+id+'\')" class="btn btn-warning">Close</a> '+
+                                '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
+                                '<a href="#" onclick="setStatusClosed(\''+issuesID+'\')" class="btn btn-success">Close</a> '+
                                 '<a href="#" onclick="deleteIssue(\''+id+'\')" class="btn btn-danger">Delete</a>'+
                                 '</div>'+ 
                                 '<div class="card-footer">' + issuedesc + '</div>' +                            
                                 '</div>' + '</li>');
+      }
+      else{
+        console.log('closed status');
+        $('#issue-list').append('<li class="list-group-item">' + '<div class="card border-success mb-3">' + 
+                                '<div class="card-header">'+ '<h3><i class="far fa-comment-alt"></i>' + ' ' + desc + '</h3>' + '</div>' +
+                                '<div class="card-body">' +
+                                '<h6>Issue ID: ' + issuesID + '</h6>'+
+                                '<p><i class="fas fa-door-closed"></i>' + ' '+ status + '</p>'+
+                                '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
+                                '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
+                                '<a href="#" onclick="setStatusOpen(\''+issuesID+'\')" class="btn btn-primary">Reopen</a> '+
+                                '<a href="#" onclick="deleteIssue(\''+id+'\')" class="btn btn-danger">Delete</a>'+
+                                '</div>'+ 
+                                '<div class="card-footer">' + issuedesc + '</div>' +                            
+                                '</div>' + '</li>');
+
+
+
+
+      }
+      
 
     }
   }
