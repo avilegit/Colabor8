@@ -21,13 +21,17 @@
     width:110px;
     text-align:left;
 }
+#tracker{
 
+    margin-top: 0.5em;
+
+}
 #issues{
 
     height: 90%;
     width: 35%;
     position: fixed;
-    margin-top: 0.1em;
+    margin-top: 0.5em;
     bottom: 0;
     right:28%;
     

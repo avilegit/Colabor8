@@ -1,4 +1,5 @@
 (function(){
+  url = document.URL;
   var person = prompt("Enter your name", "");
   if (person == null || person == "") {
     name = "Anon";
@@ -48,43 +49,46 @@ socket.on('chat', function(data){
 })
 
 function newIssue(){
-  socket.emit('newIssue',function(uuid){
+  //socket.emit('newIssue',function(uuid){
+  var i_description = document.getElementById('issueDescInput').value;
+  var i_severity = document.getElementById('IssueSeverityInput').value;
+  var i_assignedTo = document.getElementById('IssueAssignedToInput').value;
+  var i_issueDescription = document.getElementById('IssueDescriptionInput').value;
+  var i_issueStatus = 'Open';
+  
+  var newIssue = {
+    description : i_description,
+    severity : i_severity,
+    assignedTo : i_assignedTo,
+    issueStatus : i_issueStatus,
+    issueDescription: i_issueDescription,
+  }
 
-    //callback
-    var i_issueID = uuid;
-    var i_description = document.getElementById('issueDescInput').value;
-    var i_severity = document.getElementById('IssueSeverityInput').value;
-    var i_assignedTo = document.getElementById('IssueAssignedToInput').value;
-    var i_issueDescription = document.getElementById('IssueDescriptionInput').value;
-    var i_issueStatus = 'Open';
+  $.post("/newIssue",{},function(data){
 
-    var newIssue = {
-      description : i_description,
-      severity : i_severity,
-      assignedTo : i_assignedTo,
-      issueStatus : i_issueStatus,
-      issueDescription: i_issueDescription,
-      issueID : i_issueID
-    }
+      //callback
+      var i_issueID = data;
+      newIssue.issueID = i_issueID
 
-    //this can be ported to mongodb for later
-    if (localStorage.getItem('issues') == null) {
-      var issues = [];
-      issues.push(newIssue);
-      localStorage.setItem('issues', JSON.stringify(issues));
-    } else {
-      var issues = JSON.parse(localStorage.getItem('issues'));
-      issues.push(newIssue);
-      localStorage.setItem('issues', JSON.stringify(issues));
-    }
+      //this can be ported to mongodb for later
+      if (localStorage.getItem('issues') == null) {
+        var issues = [];
+        issues.push(newIssue);
+        localStorage.setItem('issues', JSON.stringify(issues));
+      } else {
+        var issues = JSON.parse(localStorage.getItem('issues'));
+        issues.push(newIssue);
+        localStorage.setItem('issues', JSON.stringify(issues));
+      }
 
+      
+      loadIssues()
+
+      document.getElementById('issueDescInput').value = '';
+      document.getElementById('IssueSeverityInput').value = '';
+      document.getElementById('IssueAssignedToInput').value = '';
+      document.getElementById('IssueDescriptionInput').value = '';
     
-    loadIssues()
-
-    document.getElementById('issueDescInput').value = '';
-    document.getElementById('IssueSeverityInput').value = '';
-    document.getElementById('IssueAssignedToInput').value = '';
-    document.getElementById('IssueDescriptionInput').value = '';
     });
 }
 
@@ -154,9 +158,9 @@ function loadIssues(){
         $('#issue-list').append('<li class="list-group-item">' + '<div class="card">' + 
                                 '<div class="card-header">'+ '<h3><i class="far fa-comment-alt"></i>' + ' ' + desc + '</h3>' + '</div>' +
                                 '<div class="card-body">' +
-                                '<h6>Issue ID: ' + issuesID + '</h6>'+
-                                '<p><i class="fas fa-door-open"></i>' + ' '+ status + '</p>'+
+                                //'<h6>Issue ID: ' + issuesID + '</h6>'+
                                 '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
+                                '<p><i class="fas fa-door-open"></i>' + ' '+ status + '</p>'+
                                 '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
                                 '<a href="#" onclick="setStatusClosed(\''+issuesID+'\')" class="btn btn-success">Close</a> '+
                                 '<a href="#" onclick="deleteIssue(\''+id+'\')" class="btn btn-danger">Delete</a>'+
@@ -166,12 +170,12 @@ function loadIssues(){
       }
       else{
         console.log('closed status');
-        $('#issue-list').append('<li class="list-group-item">' + '<div class="card border-success mb-3">' + 
+        $('#issue-list').append('<li class="list-group-item">' + '<div class="card text-white bg-success mb-3">' + 
                                 '<div class="card-header">'+ '<h3><i class="far fa-comment-alt"></i>' + ' ' + desc + '</h3>' + '</div>' +
                                 '<div class="card-body">' +
-                                '<h6>Issue ID: ' + issuesID + '</h6>'+
-                                '<p><i class="fas fa-door-closed"></i>' + ' '+ status + '</p>'+
+                                //'<h6>Issue ID: ' + issuesID + '</h6>'+
                                 '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
+                                '<p><i class="fas fa-door-closed"></i>' + ' '+ status + '</p>'+
                                 '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
                                 '<a href="#" onclick="setStatusOpen(\''+issuesID+'\')" class="btn btn-primary">Reopen</a> '+
                                 '<a href="#" onclick="deleteIssue(\''+id+'\')" class="btn btn-danger">Delete</a>'+

@@ -22,12 +22,12 @@ block content
     .input-group.mb-3
       .input-group-prepend
         span#basic-addon.input-group-text Issue Title
-      input.form-control(id="issueDescInput" type='text', placeholder='Title')
+      input.form-control(id="issueDescInput" type='text', placeholder='Title', class="form-control" required)
 
     .input-group.mb-3
       .input-group-prepend
         span#basic-addon.input-group-text Assigned To
-      input.form-control(id="IssueAssignedToInput" type='text', placeholder='Username', aria-label='Username', aria-describedby='basic-addon1')
+      input.form-control(id="IssueAssignedToInput" type='text', placeholder='Username', aria-label='Username', aria-describedby='basic-addon1', required)
 
     .input-group.mb-3
       .input-group-prepend
@@ -41,7 +41,8 @@ block content
         span.input-group-text Description
       textarea#IssueDescriptionInput.form-control(aria-label='With textarea')
     .divider
-    button.btn.btn-outline-success.my-2.my-sm-0(type = 'button' id='issue-send' onclick="newIssue()") Add
+    .form-check
+      button.btn.btn-outline-success.my-2.my-sm-0(type = 'button' id='issue-send' onclick="newIssue()") Add
 
   #issues
     .panel.panel(id='issue-window')
