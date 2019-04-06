@@ -154,6 +154,7 @@ function loadIssues(){
       var issuedesc = issues[i].issueDescription;
       var issuesID = issues[i].issueID;
 
+      // TODO: add assigned by
       if(status == 'Open'){
         $('#issue-list').append('<li class="list-group-item">' + '<div class="card">' + 
                                 '<div class="card-header">'+ '<h3><i class="far fa-comment-alt"></i>' + ' ' + desc + '</h3>' + '</div>' +
