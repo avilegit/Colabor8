@@ -64,7 +64,7 @@ function newIssue(){
     issueDescription: i_issueDescription,
   }
 
-  $.post("/newIssue",{},function(data){
+  $.post("/newIssue",JSON.stringify(newIssue),function(data){
 
       //callback
       var i_issueID = data;

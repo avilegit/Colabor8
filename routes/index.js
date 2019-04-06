@@ -9,12 +9,10 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/newissue',function(request,response){
-  console.log('new UUID!');
-  //console.log('body: ' + JSON.stringify(req.body));
+  //newissue is stored in body store this in mongo 
+  console.log('body: ' + JSON.stringify(request.body));
   //check req form for validity or do on client its smarter
   var id = uuidv1();
-  //res.set('uuid',id);
   response.send(id);
-
 });
 module.exports = router;
