@@ -10,9 +10,13 @@ router.get('/', function(req, res, next) {
 
 router.post('/newissue',function(request,response){
   //newissue is stored in body store this in mongo 
-  console.log('body: ' + JSON.stringify(request.body));
   //check req form for validity or do on client its smarter
   var id = uuidv1();
+  newIssue = request.body;
+  newIssue.id = id;
+  console.log("newIssue", newIssue);
+
+  //send back to client
   response.send(id);
 });
 module.exports = router;

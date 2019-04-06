@@ -64,7 +64,7 @@ function newIssue(){
     issueDescription: i_issueDescription,
   }
 
-  $.post("/newIssue",JSON.stringify(newIssue),function(data){
+  $.post("/newIssue/",JSON.stringify(newIssue),function(data){
 
       //callback
       var i_issueID = data;
@@ -85,7 +85,6 @@ function newIssue(){
       loadIssues()
 
       document.getElementById('issueDescInput').value = '';
-      document.getElementById('IssueSeverityInput').value = '';
       document.getElementById('IssueAssignedToInput').value = '';
       document.getElementById('IssueDescriptionInput').value = '';
     
