@@ -165,7 +165,8 @@ function loadIssues(){
                                 '<a href="#" onclick="setStatusClosed(\''+issuesID+'\')" class="btn btn-success">Close</a> '+
                                 '<a href="#" onclick="deleteIssue(\''+id+'\')" class="btn btn-danger">Delete</a>'+
                                 '</div>'+ 
-                                '<div class="card-footer">' + issuedesc + '</div>' +                            
+                                '<div class="card-footer">' + issuedesc + 
+                                '<p><i class="fas fa-user"></i>'+ ' assigned by: ' + name + '</div>' +                            
                                 '</div>' + '</li>');
       }
       else{
@@ -180,7 +181,8 @@ function loadIssues(){
                                 '<a href="#" onclick="setStatusOpen(\''+issuesID+'\')" class="btn btn-primary">Reopen</a> '+
                                 '<a href="#" onclick="deleteIssue(\''+id+'\')" class="btn btn-danger">Delete</a>'+
                                 '</div>'+ 
-                                '<div class="card-footer">' + issuedesc + '</div>' +                            
+                                '<div class="card-footer">' + issuedesc + 
+                                '<p><i class="fas fa-user"></i>'+ ' assigned by: ' + name + '</div>' +                             
                                 '</div>' + '</li>');
 
 
