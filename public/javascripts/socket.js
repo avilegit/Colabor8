@@ -8,6 +8,11 @@
   }
 })();
 
+$('#issueform').submit(function () {
+  newIssue();
+  return false;
+ });
+
 //Query DOM
 var windows = document.getElementById('chat-window'),
     output = document.getElementById('output-chat'),
