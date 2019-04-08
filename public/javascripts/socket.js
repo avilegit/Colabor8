@@ -59,10 +59,10 @@ socket.on('chat', function(data){
 })
 
 function newIssue(){
-  //socket.emit('newIssue',function(uuid){
   var i_description = document.getElementById('issueDescInput').value;
   var i_severity = document.getElementById('IssueSeverityInput').value;
   var i_assignedTo = document.getElementById('IssueAssignedToInput').value;
+  var i_assignedBy = name;
   var i_issueDescription = document.getElementById('IssueDescriptionInput').value;
   var i_issueStatus = 'Open';
   
@@ -70,6 +70,7 @@ function newIssue(){
     description : i_description,
     severity : i_severity,
     assignedTo : i_assignedTo,
+    assignedBy : i_assignedBy,
     issueStatus : i_issueStatus,
     issueDescription: i_issueDescription,
   }
@@ -90,9 +91,8 @@ function newIssue(){
         issues.push(newIssue);
         localStorage.setItem('issues', JSON.stringify(issues));
       }
-
       
-      loadIssues()
+      loadIssues();
 
       document.getElementById('issueDescInput').value = '';
       document.getElementById('IssueAssignedToInput').value = '';
@@ -147,70 +147,75 @@ function deleteIssue(id){
 
 
 function loadIssues(){
-  var issues = JSON.parse(localStorage.getItem('issues'));
-  var issuesList = document.getElementById('issue-list');
+  $.get("/Issues",function(Issues){
+    var issuesList = document.getElementById('issue-list');
 
-  issuesList.innerHTML = '';
+    issuesList.innerHTML = '';
 
-  //alert(issues.length.toString())
-  if(issues.length){
-    for (var i = 0; i < issues.length; i++) {
-      var id = issues[i].issueID;
-      var desc = issues[i].description;
-      var severity = issues[i].severity;
-      var assignedTo = issues[i].assignedTo;
-      var status = issues[i].issueStatus;
-      var issuedesc = issues[i].issueDescription;
-      var issuesID = issues[i].issueID;
+    console.log("all of da issues", Issues);
 
-      // TODO: add assigned by
-      if(status == 'Open'){
-        $('#issue-list').append('<li class="list-group-item">' + '<div class="card">' + 
-                                '<div class="card-header">'+ '<h3><i class="far fa-comment-alt"></i>' + ' ' + desc + '</h3>' + '</div>' +
-                                '<div class="card-body">' +
-                                //'<h6>Issue ID: ' + issuesID + '</h6>'+
-                                '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
-                                '<p><i class="fas fa-door-open"></i>' + ' '+ status + '</p>'+
-                                '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
-                                '<a href="#" onclick="setStatusClosed(\''+issuesID+'\')" class="btn btn-success">Close</a> '+
-                                '<a href="#" onclick="deleteIssue(\''+id+'\')" class="btn btn-danger">Delete</a>'+
-                                '</div>'+ 
-                                '<div class="card-footer">' + issuedesc + 
-                                '<p><i class="fas fa-user"></i>'+ ' assigned by: ' + name + '</div>' +                            
-                                '</div>' + '</li>');
+    //alert(issues.length.toString())
+    if(Issues.length){
+      for (var i = 0; i < Issues.length; i++) {
+        var id = Issues[i]._id;
+        var desc = Issues[i].description;
+        var severity = Issues[i].severity;
+        var assignedTo = Issues[i].assignedTo;
+        var status = Issues[i].issueStatus;
+        var issuedesc = Issues[i].issueDescription;
+        var issuesID = Issues[i].uuid;
+
+
+        // TODO: add assigned by
+        if(status == 'Open'){
+          $('#issue-list').append('<li class="list-group-item">' + '<div class="card">' + 
+                                  '<div class="card-header">'+ '<h3><i class="far fa-comment-alt"></i>' + ' ' + desc + '</h3>' + '</div>' +
+                                  '<div class="card-body">' +
+                                  //'<h6>Issue ID: ' + issuesID + '</h6>'+
+                                  '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
+                                  '<p><i class="fas fa-door-open"></i>' + ' '+ status + '</p>'+
+                                  '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
+                                  '<a href="#" onclick="setStatusClosed(\''+issuesID+'\')" class="btn btn-success">Close</a> '+
+                                  '<a href="#" onclick="deleteIssue(\''+id+'\')" class="btn btn-danger">Delete</a>'+
+                                  '</div>'+ 
+                                  '<div class="card-footer">' + issuedesc + 
+                                  '<p><i class="fas fa-user"></i>'+ ' assigned by: ' + name + '</div>' +                            
+                                  '</div>' + '</li>');
+        }
+        else{
+          console.log('closed status');
+          $('#issue-list').append('<li class="list-group-item">' + '<div class="card text-white bg-success mb-3">' + 
+                                  '<div class="card-header">'+ '<h3><i class="far fa-comment-alt"></i>' + ' ' + desc + '</h3>' + '</div>' +
+                                  '<div class="card-body">' +
+                                  //'<h6>Issue ID: ' + issuesID + '</h6>'+
+                                  '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
+                                  '<p><i class="fas fa-door-closed"></i>' + ' '+ status + '</p>'+
+                                  '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
+                                  '<a href="#" onclick="setStatusOpen(\''+issuesID+'\')" class="btn btn-primary">Reopen</a> '+
+                                  '<a href="#" onclick="deleteIssue(\''+id+'\')" class="btn btn-danger">Delete</a>'+
+                                  '</div>'+ 
+                                  '<div class="card-footer">' + issuedesc + 
+                                  '<p><i class="fas fa-user"></i>'+ ' assigned by: ' + name + '</div>' +                             
+                                  '</div>' + '</li>');
+
+
+
+
+        }
+        
+
       }
-      else{
-        console.log('closed status');
-        $('#issue-list').append('<li class="list-group-item">' + '<div class="card text-white bg-success mb-3">' + 
-                                '<div class="card-header">'+ '<h3><i class="far fa-comment-alt"></i>' + ' ' + desc + '</h3>' + '</div>' +
-                                '<div class="card-body">' +
-                                //'<h6>Issue ID: ' + issuesID + '</h6>'+
-                                '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
-                                '<p><i class="fas fa-door-closed"></i>' + ' '+ status + '</p>'+
-                                '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
-                                '<a href="#" onclick="setStatusOpen(\''+issuesID+'\')" class="btn btn-primary">Reopen</a> '+
-                                '<a href="#" onclick="deleteIssue(\''+id+'\')" class="btn btn-danger">Delete</a>'+
-                                '</div>'+ 
-                                '<div class="card-footer">' + issuedesc + 
-                                '<p><i class="fas fa-user"></i>'+ ' assigned by: ' + name + '</div>' +                             
-                                '</div>' + '</li>');
-
-
-
-
-      }
-      
-
     }
-  }
-  else{
-    $('#issue-list').append('<li class="list-group-item">' + '<div class="card">' + '<div class="card text-white bg-success mb-3">' +
-                                '<div class="card-body">' + 
-                                '<h5 class="card-title">' + 'No issues!' + '</h5>' + 
-                                '</div>' +                                                       
-                                '</div>' + 
-                                '</div>' + '</li>');
-  }
+    else{
+      $('#issue-list').append('<li class="list-group-item">' + '<div class="card">' + '<div class="card text-white bg-success mb-3">' +
+                                  '<div class="card-body">' + 
+                                  '<h5 class="card-title">' + 'No issues!' + '</h5>' + 
+                                  '</div>' +                                                       
+                                  '</div>' + 
+                                  '</div>' + '</li>');
+    }
+  });
+
 
 }
 
