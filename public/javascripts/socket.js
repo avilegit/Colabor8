@@ -149,10 +149,7 @@ function deleteIssue(id){
 function loadIssues(){
   $.get("/Issues",function(Issues){
     var issuesList = document.getElementById('issue-list');
-
     issuesList.innerHTML = '';
-
-    console.log("all of da issues", Issues);
 
     //alert(issues.length.toString())
     if(Issues.length){
@@ -161,6 +158,7 @@ function loadIssues(){
         var desc = Issues[i].description;
         var severity = Issues[i].severity;
         var assignedTo = Issues[i].assignedTo;
+        var assignedBy = Issues[i].assignedBy;
         var status = Issues[i].issueStatus;
         var issuedesc = Issues[i].issueDescription;
         var issuesID = Issues[i].uuid;
@@ -179,7 +177,7 @@ function loadIssues(){
                                   '<a href="#" onclick="deleteIssue(\''+id+'\')" class="btn btn-danger">Delete</a>'+
                                   '</div>'+ 
                                   '<div class="card-footer">' + issuedesc + 
-                                  '<p><i class="fas fa-user"></i>'+ ' assigned by: ' + name + '</div>' +                            
+                                  '<p><i class="fas fa-user"></i>'+ ' assigned by: ' + assignedBy + '</div>' +                            
                                   '</div>' + '</li>');
         }
         else{
@@ -195,7 +193,7 @@ function loadIssues(){
                                   '<a href="#" onclick="deleteIssue(\''+id+'\')" class="btn btn-danger">Delete</a>'+
                                   '</div>'+ 
                                   '<div class="card-footer">' + issuedesc + 
-                                  '<p><i class="fas fa-user"></i>'+ ' assigned by: ' + name + '</div>' +                             
+                                  '<p><i class="fas fa-user"></i>'+ ' assigned by: ' + assignedBy + '</div>' +                             
                                   '</div>' + '</li>');
 
 
