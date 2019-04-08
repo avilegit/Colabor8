@@ -1,15 +1,20 @@
 (function(){
   url = document.URL;
-  var person = prompt("Enter your name", "");
+  do{
+    var person = prompt("Enter your name", "");
+  }while(person == "");
+
   if (person == null || person == "") {
     name = "Anon";
   } else {
     name= person;
   }
+  person = "";
 })();
 
 $('#issueform').submit(function () {
   newIssue();
+  //disable reload
   return false;
  });
 
@@ -69,7 +74,7 @@ function newIssue(){
     issueDescription: i_issueDescription,
   }
 
-  $.post("/newIssue/",JSON.stringify(newIssue),function(data){
+  $.post("/newIssue/",newIssue,function(data){
 
       //callback
       var i_issueID = data;

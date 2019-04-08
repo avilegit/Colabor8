@@ -15,6 +15,7 @@ var debug = require('debug')('colabor8:server');
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 
+
 const uuidv1 = require('uuid/v1');
 
 
@@ -93,10 +94,6 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-
-
-  
-
 
 ///wwwww stuff
 function onError(error) {
