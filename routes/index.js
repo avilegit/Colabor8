@@ -57,4 +57,23 @@ router.post('/newissue',function(request,response){
   //can send this back asynchronously, dont need to wait for mongo to insert
   response.send(id);
 });
+
+router.post('/deleteissue',function(request,response){
+
+  mongo.connect(mongourl, function(err, client){
+    assert.equal(null,err);
+
+    var query = {uuid: request.body.uuid};
+    console.log('queryyy: ', query);
+    //db created
+    var db = client.db('Colabor8');
+    db.collection("Issues").deleteOne(query,function(err,result){
+      assert.equal(null,err);
+      client.close();
+
+      //synchronous send
+      response.send();
+    });
+  });
+});
 module.exports = router;

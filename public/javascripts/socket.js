@@ -80,17 +80,6 @@ function newIssue(){
       //callback
       var i_issueID = data;
       newIssue.issueID = i_issueID
-
-      //this can be ported to mongodb for later
-      if (localStorage.getItem('issues') == null) {
-        var issues = [];
-        issues.push(newIssue);
-        localStorage.setItem('issues', JSON.stringify(issues));
-      } else {
-        var issues = JSON.parse(localStorage.getItem('issues'));
-        issues.push(newIssue);
-        localStorage.setItem('issues', JSON.stringify(issues));
-      }
       
       loadIssues();
 
@@ -131,18 +120,14 @@ function setStatusOpen(id){
   loadIssues();
 }
 
-function deleteIssue(id){
+function deleteIssue(ID){
+  var delete_query = {uuid: ID};
 
-  var issues = JSON.parse(localStorage.getItem('issues'));
+  console.log("query1 ",delete_query);
+  $.post("/deleteissue", delete_query, function(data){
 
-  for(var i =0;i<issues.length;i++){
-    if(issues[i].issueID == id){
-      issues.splice(i,1);
-      break;
-    }
-  }
-  localStorage.setItem('issues',JSON.stringify(issues));
-  loadIssues();
+    loadIssues();
+  });
 }
 
 
@@ -154,7 +139,7 @@ function loadIssues(){
     //alert(issues.length.toString())
     if(Issues.length){
       for (var i = 0; i < Issues.length; i++) {
-        var id = Issues[i]._id;
+        //var id = Issues[i]._id;
         var desc = Issues[i].description;
         var severity = Issues[i].severity;
         var assignedTo = Issues[i].assignedTo;
@@ -169,12 +154,11 @@ function loadIssues(){
           $('#issue-list').append('<li class="list-group-item">' + '<div class="card">' + 
                                   '<div class="card-header">'+ '<h3><i class="far fa-comment-alt"></i>' + ' ' + desc + '</h3>' + '</div>' +
                                   '<div class="card-body">' +
-                                  //'<h6>Issue ID: ' + issuesID + '</h6>'+
                                   '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
                                   '<p><i class="fas fa-door-open"></i>' + ' '+ status + '</p>'+
                                   '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
                                   '<a href="#" onclick="setStatusClosed(\''+issuesID+'\')" class="btn btn-success">Close</a> '+
-                                  '<a href="#" onclick="deleteIssue(\''+id+'\')" class="btn btn-danger">Delete</a>'+
+                                  '<a href="#" onclick="deleteIssue(\''+issuesID+'\')" class="btn btn-danger">Delete</a>'+
                                   '</div>'+ 
                                   '<div class="card-footer">' + issuedesc + 
                                   '<p><i class="fas fa-user"></i>'+ ' assigned by: ' + assignedBy + '</div>' +                            
@@ -185,12 +169,11 @@ function loadIssues(){
           $('#issue-list').append('<li class="list-group-item">' + '<div class="card text-white bg-success mb-3">' + 
                                   '<div class="card-header">'+ '<h3><i class="far fa-comment-alt"></i>' + ' ' + desc + '</h3>' + '</div>' +
                                   '<div class="card-body">' +
-                                  //'<h6>Issue ID: ' + issuesID + '</h6>'+
                                   '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
                                   '<p><i class="fas fa-door-closed"></i>' + ' '+ status + '</p>'+
                                   '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
                                   '<a href="#" onclick="setStatusOpen(\''+issuesID+'\')" class="btn btn-primary">Reopen</a> '+
-                                  '<a href="#" onclick="deleteIssue(\''+id+'\')" class="btn btn-danger">Delete</a>'+
+                                  '<a href="#" onclick="deleteIssue(\''+issuesID+'\')" class="btn btn-danger">Delete</a>'+
                                   '</div>'+ 
                                   '<div class="card-footer">' + issuedesc + 
                                   '<p><i class="fas fa-user"></i>'+ ' assigned by: ' + assignedBy + '</div>' +                             
