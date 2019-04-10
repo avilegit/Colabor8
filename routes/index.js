@@ -79,13 +79,12 @@ router.post('/updatestatus', function(request,response){
 });
 
 router.post('/search', function(request,response){
-  var query = request.body;
-  console.log('received req', request.body.payload);
+  console.log('received req', JSON.parse(request.body.payload));
   mongo.connect(mongourl, function(err, client){
     assert.equal(null,err);
     //db created
     var db = client.db('Colabor8');
-    db.collection("Issues").find(request.body.payload).toArray(function(err,result){
+    db.collection("Issues").find(JSON.parse(request.body.payload)).toArray(function(err,result){
       assert.equal(null,err);
       console.log('query:, ',result);
       issues = result;

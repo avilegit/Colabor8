@@ -109,7 +109,6 @@ function issueSearch(){
     issues = data;
     loadsearchIssues(issues);
 
-    document.getElementById('issueSearch').value = '';
   });
   
 }
@@ -262,3 +261,10 @@ send.addEventListener('click',function(){
     })
   }
 });
+
+function checkSearch(){
+
+  if(document.getElementById('issueSearch').value == ''){
+    loadIssues();
+  }
+}
