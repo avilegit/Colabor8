@@ -18,6 +18,13 @@ $('#issueform').submit(function () {
   return false;
  });
 
+ $('#searchform').submit(function () {
+
+  issueSearch();
+  return false;
+
+ });
+
 //Query DOM
 var windows = document.getElementById('chat-window'),
     output = document.getElementById('output-chat'),
@@ -85,6 +92,28 @@ function newIssue(){
     });
 }
 
+function issueSearch(){
+  var _searchType = document.getElementById('IssueSearchType').value;
+  var _searchQuery = document.getElementById('issueSearch').value;
+
+  var querypayload = {[_searchType]:_searchQuery};
+
+  var query = {
+    payload:JSON.stringify({
+      [_searchType]:_searchQuery
+    })
+  };
+
+  $.post("/search", query, function(data){
+
+    issues = data;
+    loadsearchIssues(issues);
+
+    document.getElementById('issueSearch').value = '';
+  });
+  
+}
+
 function flipStatus(ID_,status_){
   var update_query = {
     uuid: ID_,
@@ -97,26 +126,66 @@ function flipStatus(ID_,status_){
   });
 }
 
-function setStatusOpen(id){
-  var issues = JSON.parse(localStorage.getItem('issues'));
-
-  //gross use db next
-  for(var i =0;i<issues.length;i++){
-    if(issues[i].issueID == id){
-      issues[i].issueStatus = 'Open';
-      issues.unshift(issues.splice(i,1)[0]);
-      break;
-    }
-  }
-  localStorage.setItem('issues',JSON.stringify(issues));
-  loadIssues();
-}
-
 function deleteIssue(ID){
   var delete_query = {uuid: ID};
   $.post("/deleteissue", delete_query, function(data){
     loadIssues();
   });
+}
+
+function loadsearchIssues(Issues){
+  var issuesList = document.getElementById('issue-list');
+  issuesList.innerHTML = '';
+
+
+  if(Issues.length){
+    for (var i = 0; i < Issues.length; i++) {
+      var desc = Issues[i].description;
+      var severity = Issues[i].severity;
+      var assignedTo = Issues[i].assignedTo;
+      var assignedBy = Issues[i].assignedBy;
+      var status = Issues[i].issueStatus;
+      var issuedesc = Issues[i].issueDescription;
+      var issuesID = Issues[i].uuid;
+
+      if(status == 'Open'){
+        $('#issue-list').append('<li class="list-group-item">' + '<div class="card">' + 
+                                '<div class="card-header">'+ '<h3><i class="far fa-comment-alt"></i>' + ' ' + desc + '</h3>' + '</div>' +
+                                '<div class="card-body">' +
+                                '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
+                                '<p><i class="fas fa-door-open"></i>' + ' '+ status + '</p>'+
+                                '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
+                                '<a href="#" onclick="flipStatus(\''+issuesID  + '\',\'' + status + '\')" class="btn btn-success">Close</a> '+
+                                '<a href="#" onclick="deleteIssue(\''+issuesID+'\')" class="btn btn-danger">Delete</a>'+
+                                '</div>'+ 
+                                '<div class="card-footer">' + issuedesc + 
+                                '<p><i class="fas fa-user"></i>'+ ' assigned by: ' + assignedBy + '</div>' +                            
+                                '</div>' + '</li>');
+      }
+      else{
+        $('#issue-list').append('<li class="list-group-item">' + '<div class="card text-white bg-success mb-3">' + 
+                                '<div class="card-header">'+ '<h3><i class="far fa-comment-alt"></i>' + ' ' + desc + '</h3>' + '</div>' +
+                                '<div class="card-body">' +
+                                '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
+                                '<p><i class="fas fa-door-closed"></i>' + ' '+ status + '</p>'+
+                                '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
+                                '<a href="#" onclick="flipStatus(\''+issuesID  + '\',\'' + status + '\')" class="btn btn-primary">Reopen</a> '+
+                                '<a href="#" onclick="deleteIssue(\''+issuesID+'\')" class="btn btn-danger">Delete</a>'+
+                                '</div>'+ 
+                                '<div class="card-footer">' + issuedesc + 
+                                '<p><i class="fas fa-user"></i>'+ ' assigned by: ' + assignedBy + '</div>' +                             
+                                '</div>' + '</li>');
+      }
+    }
+  }
+  else{
+    $('#issue-list').append('<li class="list-group-item">' + '<div class="card">' + '<div class="card text-white bg-success mb-3">' +
+                                '<div class="card-body">' + 
+                                '<h5 class="card-title">' + 'No issues found!' + '</h5>' + 
+                                '</div>' +                                                       
+                                '</div>' + 
+                                '</div>' + '</li>');
+  }
 }
 
 
