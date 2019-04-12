@@ -13,7 +13,7 @@ block scripts
 block content
   #nav
       nav.navbar.navbar-dark.bg-dark.justify-content-between
-        a.navbar-brand(style="font-size:22px", color:white) Colabor8
+        a.navbar-brand Colabor8
         form(id = "searchform").form-inline
           //.input-group.mb-3
           select#IssueSearchType.custom-select
@@ -23,7 +23,7 @@ block content
             option(value='assignedBy') Assigned By
             option(value='severity') Severity
 
-          input.form-control.mr-sm-2(id='issueSearch',type='search', placeholder='Search', aria-label='Search' oninput = "checkSearch()")
+          input.form-control.mr-sm-2(id='issueSearch',type='search', placeholder='Search', aria-label='Search',autocomplete = "off", oninput = "checkSearch()")
           button.btn.btn-outline-success.my-2.my-sm-0(type='submit' id='issue-search-submit') Search
   #tracker
     form(id = "issueform")
