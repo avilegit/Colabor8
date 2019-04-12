@@ -7,7 +7,16 @@ const mongourl = 'mongodb://localhost:27017/Colabor8'
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index');
+  res.render('lobby',{
+    title: 'Colabor8'
+  });
+});
+
+router.get('/rooms/:id',function(req, res){
+  res.render('room', {
+    title: 'Colabor8',
+    roomID: req.params.id
+  });
 });
 
 router.get('/Issues',function(req,res,next){

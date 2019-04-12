@@ -1,0 +1,22 @@
+extends layout
+
+block styles
+    link(rel='stylesheet', href='/stylesheets/lobby.css')
+
+block scripts
+    //script(src='/javascripts/lobby.js')
+
+block content
+    nav.navbar.navbar-dark.bg-dark.justify-content-between
+        a.navbar-brand #{title}
+    #window
+        .well(id='chat-window')
+            form.form-group(action='' id='room-selection')  
+                .input-group.mb-3
+                    .input-group-prepend
+                        span#basic-addon.input-group-text #
+                    input.form-control(type='text' id='enter-room-text' placeholder='Room ID')
+                    .input-group-prepend
+                        span.input-group-btn
+                    button.btn.btn-primary.button Enter Room ID
+            button.btn.btn-primary.full-width(id="random") Create Room
