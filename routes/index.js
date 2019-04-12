@@ -80,11 +80,20 @@ router.post('/updatestatus', function(request,response){
 
 router.post('/search', function(request,response){
   console.log('received req', JSON.parse(request.body.payload));
+  var obj = JSON.parse(request.body.payload)
+
+  var val =  Object.values(obj)[0];
+  var key = Object.keys(obj)[0];
+  var regex = '^' + val;
+  var query = {[key]: new RegExp(regex, 'i')};
+  console.log(query);
+  //var query = {[key]: {$regex:val}};
+
   mongo.connect(mongourl, function(err, client){
     assert.equal(null,err);
     //db created
     var db = client.db('Colabor8');
-    db.collection("Issues").find(JSON.parse(request.body.payload)).toArray(function(err,result){
+    db.collection("Issues").find(query).toArray(function(err,result){
       assert.equal(null,err);
       console.log('query:, ',result);
       issues = result;
