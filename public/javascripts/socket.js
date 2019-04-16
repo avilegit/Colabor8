@@ -65,6 +65,10 @@ socket.on('chat', function(data){
   input.value = '';
 })
 
+socket.on('reload-issues',function(){
+  loadIssues();
+})
+
 function newIssue(){
   var i_description = document.getElementById('issueDescInput').value;
   var i_severity = document.getElementById('IssueSeverityInput').value;
@@ -123,18 +127,24 @@ function issueSearch(){
 function flipStatus(ID_,status_){
   var update_query = {
     uuid: ID_,
-    status: status_
+    status: status_,
+    roomID: roomID
   };
 
-  $.post("/updatestatus", update_query, function(data){
-
+  socket.emit('updateStatus',update_query, function(){
+  //$.post("/updatestatus", update_query, function(data){
     loadIssues();
   });
 }
 
 function deleteIssue(ID){
-  var delete_query = {uuid: ID};
-  $.post("/deleteissue", delete_query, function(data){
+  var delete_query = {
+    uuid: ID,
+    roomID: roomID
+  };
+
+  socket.emit('deleteIssue',delete_query,function(){
+  //$.post("/deleteissue", delete_query, function(data){
     loadIssues();
   });
 }

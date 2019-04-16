@@ -85,14 +85,15 @@ io.on('connection',function(client){
         };
 
         //send back to client
-        mongo.connect(mongourl, function(err, client){
+        mongo.connect(mongourl, function(err, client1){
             assert.equal(null,err);
             //db created
-            var db = client.db('Colabor8');
+            var db = client1.db('Colabor8');
             db.collection("Issues").insertOne(newIssue, function(err,result){
             assert.equal(null,err);
             console.log('item inserted, ',newIssue);
-            client.close();
+            client1.close();
+            client.broadcast.emit('reload-issues');
             });
         });
         
@@ -119,6 +120,55 @@ io.on('connection',function(client){
             });
         });
 
+    })
+    
+    client.on('updateStatus', function(data,callback){
+        var status_ = data.status;
+        if(status_ == "Open"){status_ = "Closed";}
+        else{status_ = "Open";}
+      
+        var query= {
+            uuid    : data.uuid,
+            roomID  : data.roomID
+        };
+      
+        mongo.connect(mongourl, function(err, client1){
+            assert.equal(null,err);
+            //db created
+            var db = client1.db('Colabor8');
+            db.collection("Issues").updateOne(query,{$set: {issueStatus: status_}},function(err,result){
+                assert.equal(null,err);
+                client1.close();
+
+                client.broadcast.emit('reload-issues');
+                callback();
+                
+            });
+        });
+    })
+
+    client.on('deleteIssue', function(data, callback){
+
+        //lazy ass fix
+        mongo.connect(mongourl, function(err, client1){
+            assert.equal(null,err);
+        
+            var query = {
+                uuid    : data.uuid,
+                roomID  : data.roomID
+            };
+
+            //db created
+            var db = client1.db('Colabor8');
+            console.log('this is the query', query);
+            db.collection("Issues").deleteOne(query,function(err,result){
+              assert.equal(null,err);
+              client1.close();
+              //synchronous send
+              client.broadcast.emit('reload-issues');
+              callback();
+            });
+        });
     })
 });
 
