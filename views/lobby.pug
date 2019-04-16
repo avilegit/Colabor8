@@ -4,6 +4,10 @@ block styles
     link(rel='stylesheet', href='/stylesheets/lobby.css')
 
 block scripts
+  script(type="text/javascript" src='/socket.io/socket.io.js') 
+
+  script('text/javascript').
+    var socket = io();
     //script(src='/javascripts/lobby.js')
 
 block content
@@ -19,4 +23,7 @@ block content
                     .input-group-prepend
                         span.input-group-btn
                     button.btn.btn-primary.button Enter Room ID
-            button.btn.btn-primary.full-width(id="random") Create Room
+                    
+            button.btn.btn-primary.full-width(id="new-room-button") Create Room
+
+    script(type="text/javascript" src ='./javascripts/lobby.js')

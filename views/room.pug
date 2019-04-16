@@ -2,7 +2,7 @@ extends layout
 
 
 block styles
-  link(rel='stylesheet', href='./stylesheets/room.css')
+  link(rel='stylesheet', href='/stylesheets/room.css')
 
 block scripts
   script(type="text/javascript" src='/socket.io/socket.io.js') 
@@ -66,7 +66,7 @@ block content
           span.input-group-btn
               button.btn.btn-outline-success.my-2.my-sm-0(id='chat-send' type='button') Send
                   
-  script(type="text/javascript" src ='./javascripts/socket.js')
+  script(type="text/javascript" src ='/javascripts/socket.js')
 
 
 

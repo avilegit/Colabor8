@@ -38,7 +38,7 @@ window.onload = ()=>{
   loadIssues();
 }
 
-var socket = io.connect('http://localhost:3000')
+var socket = io.connect('http://localhost:3000');
 
 socket.on('connect', function(){
   socket.emit('join',name);

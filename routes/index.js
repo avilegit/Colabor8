@@ -13,11 +13,14 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/rooms/:id',function(req, res){
+
+  console.log('new')
   res.render('room', {
     title: 'Colabor8',
     roomID: req.params.id
   });
 });
+
 
 router.get('/Issues',function(req,res,next){
 

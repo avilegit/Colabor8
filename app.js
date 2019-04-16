@@ -15,6 +15,8 @@ var debug = require('debug')('colabor8:server');
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 
+const mongo = require('mongodb').MongoClient
+const mongourl = 'mongodb://localhost:27017/Colabor8'
 const uuidv1 = require('uuid/v1');
 
 io.on('connection',function(client){
@@ -46,6 +48,13 @@ io.on('connection',function(client){
         var id = uuidv1();
         client_callback(id);
     });
+    client.on('new-room',function(callback){
+        console.log('got room request');
+        var room_id = uuidv1();
+        room_id_trunc = room_id.substring(0,8)
+
+        callback(room_id_trunc);
+    })
 });
 
 server.listen(port);
