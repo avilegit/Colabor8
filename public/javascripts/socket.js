@@ -107,17 +107,14 @@ function issueSearch(){
   var _searchType = document.getElementById('IssueSearchType').value;
   var _searchQuery = document.getElementById('issueSearch').value;
 
-  var querypayload = {[_searchType]:_searchQuery};
-
-  var query = {
-    payload:JSON.stringify({
-      [_searchType]:_searchQuery
-    })
+  var querypayload = {
+    [_searchType] :_searchQuery,
+    roomID        : roomID
   };
 
-  $.post("/search", query, function(data){
+  socket.emit('searchIssues',querypayload, function(issues){
+  //$.post("/search", query, function(data){
 
-    issues = data;
     loadsearchIssues(issues);
 
   });

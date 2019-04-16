@@ -121,6 +121,31 @@ io.on('connection',function(client){
         });
 
     })
+
+    client.on('searchIssues', function(data,callback){
+
+        var search_string   =  Object.values(data)[0];
+        var search_type     = Object.keys(data)[0];
+        var regex_search_string = '^' + search_string;
+        var query = {
+            [search_type]   : new RegExp(regex_search_string, 'i'),
+            roomID          : data.roomID
+        };
+        console.log(query);
+        //var query = {[key]: {$regex:val}};
+
+        mongo.connect(mongourl, function(err, client1){
+            assert.equal(null,err);
+            //db created
+            var db = client1.db('Colabor8');
+            db.collection("Issues").find(query).toArray(function(err,result){
+                assert.equal(null,err);
+                console.log('query:, ',result);
+                client1.close();
+                callback(result);
+            });
+        });
+    })
     
     client.on('updateStatus', function(data,callback){
         var status_ = data.status;

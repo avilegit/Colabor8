@@ -70,25 +70,25 @@ router.get('/rooms/:id',function(req, res){
 //   response.send(id);
 // });
 
-router.post('/updatestatus', function(request,response){
+// router.post('/updatestatus', function(request,response){
 
-  var status_ = request.body.status;
-  if(status_ == "Open"){status_ = "Closed";}
-  else{status_ = "Open";}
+//   var status_ = request.body.status;
+//   if(status_ == "Open"){status_ = "Closed";}
+//   else{status_ = "Open";}
 
-  var query= {uuid: request.body.uuid};
+//   var query= {uuid: request.body.uuid};
 
-  mongo.connect(mongourl, function(err, client){
-    assert.equal(null,err);
-    //db created
-    var db = client.db('Colabor8');
-    db.collection("Issues").updateOne(query,{$set: {issueStatus: status_}},function(err,result){
-      assert.equal(null,err);
-      client.close();
-      response.send();
-    });
-  });
-});
+//   mongo.connect(mongourl, function(err, client){
+//     assert.equal(null,err);
+//     //db created
+//     var db = client.db('Colabor8');
+//     db.collection("Issues").updateOne(query,{$set: {issueStatus: status_}},function(err,result){
+//       assert.equal(null,err);
+//       client.close();
+//       response.send();
+//     });
+//   });
+// });
 
 router.post('/search', function(request,response){
   console.log('received req', JSON.parse(request.body.payload));
