@@ -45,13 +45,14 @@ router.post('/newissue',function(request,response){
   //newissue is stored in body store this in mongo 
   var id = uuidv1();
   var newIssue = {
-    description : request.body.description,
-    severity : request.body.severity,
-    assignedTo : request.body.assignedTo,
-    assignedBy : request.body.assignedBy,
-    issueStatus : request.body.issueStatus,
+    description     : request.body.description,
+    severity        : request.body.severity,
+    assignedTo      : request.body.assignedTo,
+    assignedBy      : request.body.assignedBy,
+    issueStatus     : request.body.issueStatus,
     issueDescription: request.body.issueDescription,
-    uuid: id
+    uuid            : id,
+    roomID          : request.body.roomID
   };
 
   //send back to client
@@ -121,7 +122,6 @@ router.post('/deleteissue',function(request,response){
     assert.equal(null,err);
 
     var query = {uuid: request.body.uuid};
-    console.log('queryyy: ', query);
     //db created
     var db = client.db('Colabor8');
     db.collection("Issues").deleteOne(query,function(err,result){

@@ -8,14 +8,15 @@ block scripts
   script(type="text/javascript" src='/socket.io/socket.io.js') 
 
   script('text/javascript').
+    var roomID = "#{roomID}";
     var socket = io();
 
 block content
   #nav
-      nav.navbar.navbar-dark.bg-dark.justify-content-between
-        a.navbar-brand #{title}
+      nav.navbar.navbar-dark.bg-dark
+        a.navbar-brand(href = "/") #{title}
+        a.navbar-text(id = 'roomID') ##{roomID}
         form(id = "searchform").form-inline
-          //.input-group.mb-3
           select#IssueSearchType.custom-select
             option(selected='description' value='description') Title
             option(value='assignedTo') Assigned To

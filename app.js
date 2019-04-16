@@ -19,12 +19,16 @@ const mongo = require('mongodb').MongoClient
 const mongourl = 'mongodb://localhost:27017/Colabor8'
 const uuidv1 = require('uuid/v1');
 
+var assert = require('assert')
+
+
 io.on('connection',function(client){
     console.log('Client connected', client.id);
 
     //listens for join event from client side
     client.on('join',function(data){
-        io.sockets.emit('join', data);
+        //name and roomID
+        io.sockets.emit('join', data.name);
     });
 
     client.on('chat',function(data){
@@ -43,17 +47,78 @@ io.on('connection',function(client){
         io.sockets.emit('disconnect',member);
     });
 
-    client.on('newIssue',function(client_callback){
-        console.log('new UUID');
-        var id = uuidv1();
-        client_callback(id);
-    });
     client.on('new-room',function(callback){
         console.log('got room request');
         var room_id = uuidv1();
         room_id_trunc = room_id.substring(0,8)
 
+        var roomobj = {
+            id: room_id_trunc,
+            active : 1
+        };
+
+        mongo.connect(mongourl, function(err, client){
+            assert.equal(null,err);
+            //db created
+            var db = client.db('Colabor8');
+            db.collection("Rooms").insertOne(roomobj, function(err,result){
+              assert.equal(null,err);
+              console.log('item inserted, ',roomobj);
+              client.close();
+            });
+          });
+        //can be done async
         callback(room_id_trunc);
+    })
+    client.on('newIssue', function(data, callback){
+
+        var id = uuidv1();
+        var newIssue = {
+            description     : data.description,
+            severity        : data.severity,
+            assignedTo      : data.assignedTo,
+            assignedBy      : data.assignedBy,
+            issueStatus     : data.issueStatus,
+            issueDescription: data.issueDescription,
+            uuid            : id,
+            roomID          : data.roomID
+        };
+
+        //send back to client
+        mongo.connect(mongourl, function(err, client){
+            assert.equal(null,err);
+            //db created
+            var db = client.db('Colabor8');
+            db.collection("Issues").insertOne(newIssue, function(err,result){
+            assert.equal(null,err);
+            console.log('item inserted, ',newIssue);
+            client.close();
+            });
+        });
+        
+        //can send this back asynchronously, dont need to wait for mongo to insert
+        callback(id);
+    })
+
+    client.on('getIssues', function(data, callback){
+
+        var issues;
+        mongo.connect(mongourl, function(err, client){
+            assert.equal(null,err);
+            //db created
+            var db = client.db('Colabor8');
+            //search for issues by roomID
+            db.collection("Issues").find({roomID: data}).toArray(function(err,result){
+            assert.equal(null,err);
+            console.log('all items, ',result);
+            issues = result;
+            client.close();
+
+            //synchronous send
+            callback(issues);
+            });
+        });
+
     })
 });
 

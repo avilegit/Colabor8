@@ -38,10 +38,15 @@ window.onload = ()=>{
   loadIssues();
 }
 
-var socket = io.connect('http://localhost:3000');
+//var socket = io.connect('http://localhost:3000');
 
 socket.on('connect', function(){
-  socket.emit('join',name);
+  data = {
+    name: name,
+    id : roomID
+  }
+  console.log('sending payload', data);
+  socket.emit('join',data);
 });
 
 //listen for client join events
@@ -50,7 +55,7 @@ socket.on('join', function(new_member){
 })
 
 socket.on('disconnect', function(removed_member){
-  $('#chat-messages').append('<li class="list-group-item list-group-item-action list-group-item-warning">' + removed_member + " disconnected!" + '</li>');
+  //$('#chat-messages').append('<li class="list-group-item list-group-item-action list-group-item-warning">' + removed_member + " disconnected!" + '</li>');
 })
 
 socket.on('chat', function(data){
@@ -75,9 +80,11 @@ function newIssue(){
     assignedBy : i_assignedBy,
     issueStatus : i_issueStatus,
     issueDescription: i_issueDescription,
+    roomID: roomID,
   }
 
-  $.post("/newIssue/",newIssue,function(data){
+  socket.emit('newIssue', newIssue, function(data){
+  //$.post("/newIssue/",newIssue,function(data){
 
       //callback
       var i_issueID = data;
@@ -189,7 +196,8 @@ function loadsearchIssues(Issues){
 
 
 function loadIssues(){
-  $.get("/Issues",function(Issues){
+  socket.emit('getIssues', roomID, function(Issues){
+  //$.get("/Issues/:{roomID}",function(Issues){
     var issuesList = document.getElementById('issue-list');
     issuesList.innerHTML = '';
 

@@ -2,7 +2,7 @@ $(document).ready(function () {
 
     var newroom = document.getElementById('new-room-button');
 
-    socket = io();
+    //socket = io();
     io = null;
 
     socket.emit('request-num-users');
