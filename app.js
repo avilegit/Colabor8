@@ -19,8 +19,7 @@ const mongo = require('mongodb').MongoClient
 const mongourl = 'mongodb://localhost:27017/Colabor8'
 const uuidv1 = require('uuid/v1');
 
-var assert = require('assert')
-
+var assert = require('assert');
 
 io.on('connection',function(client){
     console.log('Client connected', client.id);
