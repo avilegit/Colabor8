@@ -69,6 +69,27 @@ io.on('connection',function(client){
         //can be done async
         callback(room_id_trunc);
     })
+
+    client.on('room-join-request', function(data, callback){
+        var requestID = data.roomID;
+
+        console.log('got a request id', requestID);
+
+        mongo.connect(mongourl, function(err, client1){
+            assert.equal(null,err);
+            //db created
+            var db = client1.db('Colabor8');
+            db.collection("Rooms").findOne({id : requestID}, function(err,room_hit){
+                assert.equal(null,err);
+                
+                client1.close();
+                
+                callback(room_hit);
+
+            });
+        });
+
+    });
     client.on('newIssue', function(data, callback){
 
         var id = uuidv1();

@@ -16,6 +16,19 @@ $(document).ready(function () {
         }
     });
 
+    $('#room-selection').submit(function(){
+            _roomID = document.getElementById('enter-room-text').value;
+            console.log('got room id : ', _roomID);
+            socket.emit('room-join-request', {roomID : _roomID},function(proceed){
+                
+                console.log('got response from mongo', proceed);
+                if(proceed){
+                    window.location.href = "/rooms/" + proceed.id;
+                }
+            
+            })
+    });
+
     newroom.addEventListener('click', function(){
         newRoom();
     });
