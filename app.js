@@ -99,6 +99,7 @@ io.on('connection',function(client){
             assignedTo      : data.assignedTo,
             assignedBy      : data.assignedBy,
             issueStatus     : data.issueStatus,
+            dueDate         : data.dueDate,
             issueDescription: data.issueDescription,
             uuid            : id,
             roomID          : data.roomID

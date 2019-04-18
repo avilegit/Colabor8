@@ -6,11 +6,13 @@ block styles
 
 block scripts
   script(type="text/javascript" src='/socket.io/socket.io.js') 
+  script(src='https://unpkg.com/gijgo@1.9.13/js/gijgo.min.js', type='text/javascript')
+  link(href='https://unpkg.com/gijgo@1.9.13/css/gijgo.min.css', rel='stylesheet', type='text/css')
 
   script('text/javascript').
     var roomID = "#{roomID}";
     var socket = io();
-
+     
 block content
   #nav
       nav.navbar.navbar-dark.bg-dark
@@ -23,7 +25,7 @@ block content
             option(value='issueStatus') Status
             option(value='assignedBy') Assigned By
             option(value='severity') Severity
-
+            //option(value='dueDate', placeholder='mm/dd/yyyy') Due Date TODO: support one day
           input.form-control.mr-sm-2(id='issueSearch',type='search', placeholder='Search', aria-label='Search',autocomplete = "off", oninput = "checkSearch()")
           button.btn.btn-outline-success.my-2.my-sm-0(type='submit' id='issue-search-submit') Search
   #tracker
@@ -45,6 +47,15 @@ block content
           option(selected='Low') Low
           option(value='Medium') Medium
           option(value='High') High
+      
+      .input-group.mb-3
+        .input-group-prepend
+          span#basic-addon.input-group-text Due Date
+          input#datepicker(width = 310, readonly)
+          script.
+            $('#datepicker').datepicker({
+              uiLibrary: 'bootstrap4'
+            });
 
       .input-group
         .input-group-prepend

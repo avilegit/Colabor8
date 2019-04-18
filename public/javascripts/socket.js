@@ -70,21 +70,23 @@ socket.on('reload-issues',function(){
 })
 
 function newIssue(){
-  var i_description = document.getElementById('issueDescInput').value;
-  var i_severity = document.getElementById('IssueSeverityInput').value;
-  var i_assignedTo = document.getElementById('IssueAssignedToInput').value;
-  var i_assignedBy = name;
+  var i_description  = document.getElementById('issueDescInput').value;
+  var i_severity     = document.getElementById('IssueSeverityInput').value;
+  var i_assignedTo   = document.getElementById('IssueAssignedToInput').value;
+  var i_assignedBy   = name;
+  var i_dueDate      = document.getElementById('datepicker').value;
   var i_issueDescription = document.getElementById('IssueDescriptionInput').value;
   var i_issueStatus = 'Open';
   
   var newIssue = {
-    description : i_description,
-    severity : i_severity,
-    assignedTo : i_assignedTo,
-    assignedBy : i_assignedBy,
-    issueStatus : i_issueStatus,
+    description     : i_description,
+    severity        : i_severity,
+    assignedTo      : i_assignedTo,
+    assignedBy      : i_assignedBy,
+    dueDate         : i_dueDate,
+    issueStatus     : i_issueStatus,
     issueDescription: i_issueDescription,
-    roomID: roomID,
+    roomID          : roomID,
   }
 
   socket.emit('newIssue', newIssue, function(data){
@@ -99,7 +101,7 @@ function newIssue(){
       document.getElementById('issueDescInput').value = '';
       document.getElementById('IssueAssignedToInput').value = '';
       document.getElementById('IssueDescriptionInput').value = '';
-    
+      document.getElementById('datepicker').value = '';
     });
 }
 
@@ -158,6 +160,7 @@ function loadsearchIssues(Issues){
       var assignedTo = Issues[i].assignedTo;
       var assignedBy = Issues[i].assignedBy;
       var status = Issues[i].issueStatus;
+      var dueDate = Issues[i].dueDate;
       var issuedesc = Issues[i].issueDescription;
       var issuesID = Issues[i].uuid;
 
@@ -167,6 +170,7 @@ function loadsearchIssues(Issues){
                                 '<div class="card-body">' +
                                 '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
                                 '<p><i class="fas fa-door-open"></i>' + ' '+ status + '</p>'+
+                                '<p><i class="fas fa-door-open"></i>' + ' '+ dueDate + '</p>'+
                                 '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
                                 '<a href="#" onclick="flipStatus(\''+issuesID  + '\',\'' + status + '\')" class="btn btn-success">Close</a> '+
                                 '<a href="#" onclick="deleteIssue(\''+issuesID+'\')" class="btn btn-danger">Delete</a>'+
@@ -218,6 +222,7 @@ function loadIssues(){
         var status     = Issues[i].issueStatus;
         var issuedesc  = Issues[i].issueDescription;
         var issuesID   = Issues[i].uuid;
+        var dueDate    = Issues[i].dueDate;
 
         if(status == 'Open'){
           $('#issue-list').append('<li class="list-group-item">' + '<div class="card">' + 
@@ -225,6 +230,7 @@ function loadIssues(){
                                   '<div class="card-body">' +
                                   '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
                                   '<p><i class="fas fa-door-open"></i>' + ' '+ status + '</p>'+
+                                  '<p><i class="fas fa-calendar-day"></i>' + ' '+ dueDate + '</p>'+
                                   '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
                                   '<a href="#" onclick="flipStatus(\''+issuesID  + '\',\'' + status + '\')" class="btn btn-success">Close</a> '+
                                   '<a href="#" onclick="deleteIssue(\''+issuesID+'\')" class="btn btn-danger">Delete</a>'+
