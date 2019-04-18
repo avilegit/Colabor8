@@ -211,13 +211,13 @@ function loadIssues(){
 
     if(Issues.length){
       for (var i = 0; i < Issues.length; i++) {
-        var desc = Issues[i].description;
-        var severity = Issues[i].severity;
+        var desc       = Issues[i].description;
+        var severity   = Issues[i].severity;
         var assignedTo = Issues[i].assignedTo;
         var assignedBy = Issues[i].assignedBy;
-        var status = Issues[i].issueStatus;
-        var issuedesc = Issues[i].issueDescription;
-        var issuesID = Issues[i].uuid;
+        var status     = Issues[i].issueStatus;
+        var issuedesc  = Issues[i].issueDescription;
+        var issuesID   = Issues[i].uuid;
 
         if(status == 'Open'){
           $('#issue-list').append('<li class="list-group-item">' + '<div class="card">' + 

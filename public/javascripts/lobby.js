@@ -19,14 +19,26 @@ $(document).ready(function () {
     $('#room-selection').submit(function(){
             _roomID = document.getElementById('enter-room-text').value;
             console.log('got room id : ', _roomID);
-            socket.emit('room-join-request', {roomID : _roomID},function(proceed){
+            var numberletter = /^[0-9a-zA-Z]+$/;
+            if(_roomID.match(numberletter))
+            {
+                socket.emit('room-join-request', {roomID : _roomID},function(proceed){
                 
-                console.log('got response from mongo', proceed);
-                if(proceed){
-                    window.location.href = "/rooms/" + proceed.id;
-                }
-            
-            })
+                    console.log('got response from mongo', proceed);
+                    if(proceed){
+                        window.location.href = "/rooms/" + proceed.id;
+                    }
+                    else{
+                        alert("no matching room found: " + _roomID);
+                    }
+                })
+            }
+            else
+            {
+                alert("ID can only be alpha-numeric");
+            }
+
+            return false;
     });
 
     newroom.addEventListener('click', function(){
