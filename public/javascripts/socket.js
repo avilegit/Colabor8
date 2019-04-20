@@ -71,7 +71,6 @@
           if (result === null || result === "") {
               getUserName();
           } else {
-              console.log('confirnmed name');
               name = result.trim();
               socket.emit('check-username', {
                 roomID    : roomID,
@@ -80,7 +79,9 @@
               }, function(hit){
 
                 if(hit){
-                  bootbox.alert('Username already taken' + hit);
+                  bootbox.alert('Username already taken ' + hit.username, function(){
+                    getUsername();
+                  });
                 }
                 else{
                   console.log('connecting SESH ', sessionID);
