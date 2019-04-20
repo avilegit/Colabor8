@@ -32,7 +32,6 @@
 
     //getUsername();
     initRoom();
-    joinRoom();
     loadIssues();
 
   });
@@ -51,8 +50,11 @@
     socket.emit('access-room', send, function(data){
 
       console.log('got call back :', send, data)
-      if(data){
-        name = data.username;
+      if(data != null){
+        socket.emit('reconnect-user', send, function() {
+          console.log('reconnected');
+          name = data.username;
+        })
       }
       else{
         getUsername();
@@ -82,7 +84,7 @@
                 }
                 else{
                   console.log('connecting SESH ', sessionID);
-                  socket.emit('join',{
+                  socket.emit('new-user',{
                     name      : name,
                     roomID    : roomID,
                     sessionID : sessionID
@@ -93,12 +95,6 @@
       }
     });
   }
-
-  function joinRoom(){
-
-  }
-  //var socket = io.connect('http://localhost:3000');
-
 
   //listen for client join events
   socket.on('join', function(new_member){
@@ -173,46 +169,49 @@
     
   }
 
-  function flipStatus(ID_,status_){
-    var update_query = {
-      uuid: ID_,
-      status: status_,
-      roomID: roomID
-    };
+  send.addEventListener('click',function(){
+    if(input.value != ''){
+      socket.emit('chat', {
+        message: input.value,
+        name: name,
+        roomID: roomID
+      })
+    }
 
-    socket.emit('updateStatus',update_query, function(){
-    //$.post("/updatestatus", update_query, function(data){
-      loadIssues();
+    //reset text
+    input.value = '';
+  });
+
+  socket.on('typing', function(data){
+    feedback.innerHTML = '<p><em>' + data.name + ' is typing a message...</em></p>';
+  });
+
+  input.addEventListener('keypress',function(){
+    socket.emit('typing', {
+      name    : name,
+      roomID  : roomID
     });
-  }
+  })
 
-  function deleteIssue(ID){
-    var delete_query = {
-      uuid: ID,
-      roomID: roomID
-    };
+})()
 
-    socket.emit('deleteIssue',delete_query,function(){
-    //$.post("/deleteissue", delete_query, function(data){
-      loadIssues();
-    });
-  }
-
-  function loadsearchIssues(Issues){
+function loadIssues(){
+  socket.emit('getIssues', roomID, function(Issues){
+  //$.get("/Issues/:{roomID}",function(Issues){
     var issuesList = document.getElementById('issue-list');
     issuesList.innerHTML = '';
 
 
     if(Issues.length){
       for (var i = 0; i < Issues.length; i++) {
-        var desc = Issues[i].description;
-        var severity = Issues[i].severity;
+        var desc       = Issues[i].description;
+        var severity   = Issues[i].severity;
         var assignedTo = Issues[i].assignedTo;
         var assignedBy = Issues[i].assignedBy;
-        var status = Issues[i].issueStatus;
-        var dueDate = Issues[i].dueDate;
-        var issuedesc = Issues[i].issueDescription;
-        var issuesID = Issues[i].uuid;
+        var status     = Issues[i].issueStatus;
+        var issuedesc  = Issues[i].issueDescription;
+        var issuesID   = Issues[i].uuid;
+        var dueDate    = Issues[i].dueDate;
 
         if(status == 'Open'){
           $('#issue-list').append('<li class="list-group-item">' + '<div class="card">' + 
@@ -220,7 +219,7 @@
                                   '<div class="card-body">' +
                                   '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
                                   '<p><i class="fas fa-door-open"></i>' + ' '+ status + '</p>'+
-                                  '<p><i class="fas fa-door-open"></i>' + ' '+ dueDate + '</p>'+
+                                  '<p><i class="fas fa-calendar-day"></i>' + ' '+ dueDate + '</p>'+
                                   '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
                                   '<a href="#" onclick="flipStatus(\''+issuesID  + '\',\'' + status + '\')" class="btn btn-success">Close</a> '+
                                   '<a href="#" onclick="deleteIssue(\''+issuesID+'\')" class="btn btn-danger">Delete</a>'+
@@ -248,102 +247,99 @@
     else{
       $('#issue-list').append('<li class="list-group-item">' + '<div class="card">' + '<div class="card text-white bg-success mb-3">' +
                                   '<div class="card-body">' + 
-                                  '<h5 class="card-title">' + 'No issues found!' + '</h5>' + 
+                                  '<h5 class="card-title">' + 'No issues!' + '</h5>' + 
                                   '</div>' +                                                       
                                   '</div>' + 
                                   '</div>' + '</li>');
     }
-  }
+  });
+}
+
+function loadsearchIssues(Issues){
+  var issuesList = document.getElementById('issue-list');
+  issuesList.innerHTML = '';
 
 
-  function loadIssues(){
-    socket.emit('getIssues', roomID, function(Issues){
-    //$.get("/Issues/:{roomID}",function(Issues){
-      var issuesList = document.getElementById('issue-list');
-      issuesList.innerHTML = '';
+  if(Issues.length){
+    for (var i = 0; i < Issues.length; i++) {
+      var desc = Issues[i].description;
+      var severity = Issues[i].severity;
+      var assignedTo = Issues[i].assignedTo;
+      var assignedBy = Issues[i].assignedBy;
+      var status = Issues[i].issueStatus;
+      var dueDate = Issues[i].dueDate;
+      var issuedesc = Issues[i].issueDescription;
+      var issuesID = Issues[i].uuid;
 
-
-      if(Issues.length){
-        for (var i = 0; i < Issues.length; i++) {
-          var desc       = Issues[i].description;
-          var severity   = Issues[i].severity;
-          var assignedTo = Issues[i].assignedTo;
-          var assignedBy = Issues[i].assignedBy;
-          var status     = Issues[i].issueStatus;
-          var issuedesc  = Issues[i].issueDescription;
-          var issuesID   = Issues[i].uuid;
-          var dueDate    = Issues[i].dueDate;
-
-          if(status == 'Open'){
-            $('#issue-list').append('<li class="list-group-item">' + '<div class="card">' + 
-                                    '<div class="card-header">'+ '<h3><i class="far fa-comment-alt"></i>' + ' ' + desc + '</h3>' + '</div>' +
-                                    '<div class="card-body">' +
-                                    '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
-                                    '<p><i class="fas fa-door-open"></i>' + ' '+ status + '</p>'+
-                                    '<p><i class="fas fa-calendar-day"></i>' + ' '+ dueDate + '</p>'+
-                                    '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
-                                    '<a href="#" onclick="flipStatus(\''+issuesID  + '\',\'' + status + '\')" class="btn btn-success">Close</a> '+
-                                    '<a href="#" onclick="deleteIssue(\''+issuesID+'\')" class="btn btn-danger">Delete</a>'+
-                                    '</div>'+ 
-                                    '<div class="card-footer">' + issuedesc + 
-                                    '<p><i class="fas fa-user"></i>'+ ' assigned by: ' + assignedBy + '</div>' +                            
-                                    '</div>' + '</li>');
-          }
-          else{
-            $('#issue-list').append('<li class="list-group-item">' + '<div class="card text-white bg-success mb-3">' + 
-                                    '<div class="card-header">'+ '<h3><i class="far fa-comment-alt"></i>' + ' ' + desc + '</h3>' + '</div>' +
-                                    '<div class="card-body">' +
-                                    '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
-                                    '<p><i class="fas fa-door-closed"></i>' + ' '+ status + '</p>'+
-                                    '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
-                                    '<a href="#" onclick="flipStatus(\''+issuesID  + '\',\'' + status + '\')" class="btn btn-primary">Reopen</a> '+
-                                    '<a href="#" onclick="deleteIssue(\''+issuesID+'\')" class="btn btn-danger">Delete</a>'+
-                                    '</div>'+ 
-                                    '<div class="card-footer">' + issuedesc + 
-                                    '<p><i class="fas fa-user"></i>'+ ' assigned by: ' + assignedBy + '</div>' +                             
-                                    '</div>' + '</li>');
-          }
-        }
+      if(status == 'Open'){
+        $('#issue-list').append('<li class="list-group-item">' + '<div class="card">' + 
+                                '<div class="card-header">'+ '<h3><i class="far fa-comment-alt"></i>' + ' ' + desc + '</h3>' + '</div>' +
+                                '<div class="card-body">' +
+                                '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
+                                '<p><i class="fas fa-door-open"></i>' + ' '+ status + '</p>'+
+                                '<p><i class="fas fa-door-open"></i>' + ' '+ dueDate + '</p>'+
+                                '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
+                                '<a href="#" onclick="flipStatus(\''+issuesID  + '\',\'' + status + '\')" class="btn btn-success">Close</a> '+
+                                '<a href="#" onclick="deleteIssue(\''+issuesID+'\')" class="btn btn-danger">Delete</a>'+
+                                '</div>'+ 
+                                '<div class="card-footer">' + issuedesc + 
+                                '<p><i class="fas fa-user"></i>'+ ' assigned by: ' + assignedBy + '</div>' +                            
+                                '</div>' + '</li>');
       }
       else{
-        $('#issue-list').append('<li class="list-group-item">' + '<div class="card">' + '<div class="card text-white bg-success mb-3">' +
-                                    '<div class="card-body">' + 
-                                    '<h5 class="card-title">' + 'No issues!' + '</h5>' + 
-                                    '</div>' +                                                       
-                                    '</div>' + 
-                                    '</div>' + '</li>');
+        $('#issue-list').append('<li class="list-group-item">' + '<div class="card text-white bg-success mb-3">' + 
+                                '<div class="card-header">'+ '<h3><i class="far fa-comment-alt"></i>' + ' ' + desc + '</h3>' + '</div>' +
+                                '<div class="card-body">' +
+                                '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
+                                '<p><i class="fas fa-door-closed"></i>' + ' '+ status + '</p>'+
+                                '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
+                                '<a href="#" onclick="flipStatus(\''+issuesID  + '\',\'' + status + '\')" class="btn btn-primary">Reopen</a> '+
+                                '<a href="#" onclick="deleteIssue(\''+issuesID+'\')" class="btn btn-danger">Delete</a>'+
+                                '</div>'+ 
+                                '<div class="card-footer">' + issuedesc + 
+                                '<p><i class="fas fa-user"></i>'+ ' assigned by: ' + assignedBy + '</div>' +                             
+                                '</div>' + '</li>');
       }
-    });
-  }
-
-  send.addEventListener('click',function(){
-    if(input.value != ''){
-      socket.emit('chat', {
-        message: input.value,
-        name: name,
-        roomID: roomID
-      })
-    }
-
-    //reset text
-    input.value = '';
-  });
-
-  socket.on('typing', function(data){
-    feedback.innerHTML = '<p><em>' + data.name + ' is typing a message...</em></p>';
-  });
-
-  input.addEventListener('keypress',function(){
-    socket.emit('typing', {
-      name    : name,
-      roomID  : roomID
-    });
-  })
-
-  function checkSearch(){
-
-    if(document.getElementById('issueSearch').value == ''){
-      loadIssues();
     }
   }
-})()
+  else{
+    $('#issue-list').append('<li class="list-group-item">' + '<div class="card">' + '<div class="card text-white bg-success mb-3">' +
+                                '<div class="card-body">' + 
+                                '<h5 class="card-title">' + 'No issues found!' + '</h5>' + 
+                                '</div>' +                                                       
+                                '</div>' + 
+                                '</div>' + '</li>');
+  }
+}
+
+function flipStatus(ID_,status_){
+  var update_query = {
+    uuid: ID_,
+    status: status_,
+    roomID: roomID
+  };
+
+  socket.emit('updateStatus',update_query, function(){
+  //$.post("/updatestatus", update_query, function(data){
+    loadIssues();
+  });
+}
+
+function deleteIssue(ID){
+  var delete_query = {
+    uuid: ID,
+    roomID: roomID
+  };
+
+  socket.emit('deleteIssue',delete_query,function(){
+  //$.post("/deleteissue", delete_query, function(data){
+    loadIssues();
+  });
+}
+
+function checkSearch(){
+
+  if(document.getElementById('issueSearch').value == ''){
+    loadIssues();
+  }
+}

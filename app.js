@@ -27,7 +27,7 @@ io.on('connection',function(client){
     console.log('Client connected', client.id);
 
     //listens for join event from client side
-    client.on('join',function(data){
+    client.on('new-user',function(data){
         //name and roomID
         client.join(data.roomID);
         io.to(data.roomID).emit('join', data.name);
@@ -51,11 +51,20 @@ io.on('connection',function(client){
           });
     });
 
+    client.on('reconnect-user', function(data,callback){
+
+        console.log('reconneting the user, ', data);
+        client.join(data.roomID);
+        io.to(data.roomID).emit('join', data.username);
+        client.sessionID = data.sessionID;
+        callback();
+    })
+
     client.on('access-room', function(data, callback){
         
         var username_query = {
             roomID      : data.roomID,
-            sessionID   : client.sessionID
+            sessionID   : data.sessionID
         }
 
         mongo.connect(mongourl, function(err, client1){
