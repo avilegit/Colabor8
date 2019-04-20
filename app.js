@@ -15,6 +15,8 @@ var debug = require('debug')('colabor8:server');
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 
+var session = require('express-session');
+
 const mongo = require('mongodb').MongoClient
 const mongourl = 'mongodb://localhost:27017/Colabor8'
 const uuidv1 = require('uuid/v1');
@@ -290,6 +292,18 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(session({
+    // genid: function(req) {
+    //     return genuuid(); // use UUIDs for session IDs
+    //   },
+    // cookie:{
+    //     cookie: { secure: true }
+    // },
+    secret: 'LOLO LOLO',
+    resave: false,
+    saveUninitialized: true
+}));
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
@@ -312,7 +326,14 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
+
+  
 });
+
+if (app.get('env') === 'production') {
+    app.set('trust proxy', 1) // trust first proxy
+    sess.cookie.secure = true // serve secure cookies
+  }
 
 ///wwwww stuff
 function onError(error) {

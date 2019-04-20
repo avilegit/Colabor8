@@ -44,20 +44,20 @@
   }
 
   function initRoom(){
-
-    socket.emit('access-room', {
+    send = {
       roomID    : roomID,
       sessionID : sessionID
-    }, function(data){
+    }
+    socket.emit('access-room', send, function(data){
+
+      console.log('got call back :', send, data)
       if(data){
         name = data.username;
       }
       else{
         getUsername();
       }
-
     })
-
 
   }
 
@@ -81,7 +81,7 @@
                   bootbox.alert('Username already taken' + hit);
                 }
                 else{
-                  console.log('connecting');
+                  console.log('connecting SESH ', sessionID);
                   socket.emit('join',{
                     name      : name,
                     roomID    : roomID,
@@ -92,7 +92,6 @@
           }
       }
     });
-
   }
 
   function joinRoom(){
