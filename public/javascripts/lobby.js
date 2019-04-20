@@ -29,7 +29,7 @@ $(document).ready(function () {
                         window.location.href = "/rooms/" + proceed.id;
                     }
                     else{
-                        alert("no matching room found: " + _roomID);
+                        bootbox.alert("no matching room found: " + _roomID);
                     }
                 })
             }

@@ -40,7 +40,8 @@ window.onload = ()=>{
 
 window.onunload = ()=>{
   console.log('leaving window')
-  socket.emit('unsubscribe',roomID);
+  //socket.emit('unsubscribe',roomID);
+  socket.close();
 }
 
 
