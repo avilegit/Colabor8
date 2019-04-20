@@ -51,7 +51,7 @@
 
       console.log('got call back :', send, data)
       if(data != null){
-        socket.emit('reconnect-user', send, function() {
+        socket.emit('reconnect-user', data, function() {
           console.log('reconnected');
           name = data.username;
         })
