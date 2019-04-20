@@ -38,12 +38,18 @@ window.onload = ()=>{
   loadIssues();
 }
 
+window.onunload = ()=>{
+  console.log('leaving window')
+  socket.emit('unsubscribe',roomID);
+}
+
+
 //var socket = io.connect('http://localhost:3000');
 
 socket.on('connect', function(){
   data = {
     name: name,
-    id : roomID
+    roomID : roomID
   }
   console.log('sending payload', data);
   socket.emit('join',data);
@@ -59,10 +65,9 @@ socket.on('disconnect', function(removed_member){
 })
 
 socket.on('chat', function(data){
+  console.log('egeogegege');
   $('#chat-messages').append('<li class="list-group-item">' + data.name + ": " + data.message + '</li>');
   feedback.innerHTML = '';
-  //reset text
-  input.value = '';
 })
 
 socket.on('reload-issues',function(){
@@ -266,22 +271,29 @@ function loadIssues(){
   });
 }
 
+send.addEventListener('click',function(){
+  if(input.value != ''){
+    socket.emit('chat', {
+      message: input.value,
+      name: name,
+      roomID: roomID
+    })
+  }
+
+  //reset text
+  input.value = '';
+});
+
 socket.on('typing', function(data){
   feedback.innerHTML = '<p><em>' + data + ' is typing a message...</em></p>';
 });
 
 input.addEventListener('keypress',function(){
-  socket.emit('typing', name);
+  socket.emit('typing', {
+    name    : name,
+    roomID  : roomID
+  });
 })
-
-send.addEventListener('click',function(){
-  if(input.value != ''){
-    socket.emit('chat', {
-      message: input.value,
-      name: name
-    })
-  }
-});
 
 function checkSearch(){
 

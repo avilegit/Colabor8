@@ -27,17 +27,25 @@ io.on('connection',function(client){
     //listens for join event from client side
     client.on('join',function(data){
         //name and roomID
-        io.sockets.emit('join', data.name);
+        console.log('socket joining room id ',data.roomID);
+        client.join(data.roomID);
+        client.to(data.roomID).emit('join',data.name);
     });
+
+    client.on('unsubscribe', function(data){
+        console.log('socket leaving room id ',data.roomID);
+        client.leave(data.roomID);
+    })
 
     client.on('chat',function(data){
         //everyone BUT the person the client that sends the emit
-        io.sockets.emit('chat',data)
+        console.log('printing the data',data);
+        io.to(data.roomID).emit('chat',data)
 
     });
     //broadcasts to everyone but sender
     client.on('typing',function(data){
-        client.broadcast.emit('typing',data);
+        client.to(data.roomID).emit('typing',data.name);
 
     });
 
