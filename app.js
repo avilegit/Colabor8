@@ -29,7 +29,7 @@ io.on('connection',function(client){
         //name and roomID
         client.join(data.roomID);
         io.to(data.roomID).emit('join', data.name);
-
+        client.sessionID = data.sessionID;
 
         var newuser = {
             username   : data.name,
@@ -53,7 +53,7 @@ io.on('connection',function(client){
         
         var username_query = {
             roomID      : data.roomID,
-            sessionID   : data.sessionID
+            sessionID   : client.sessionID
         }
 
         mongo.connect(mongourl, function(err, client1){
