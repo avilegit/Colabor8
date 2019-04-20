@@ -4,7 +4,10 @@
 }
 
 .well{
-    margin-left: 1em;
-    margin-right: 1em;
+    width: 40%;
+    margin: auto;
+    border-style:round;
+    border-width: 1px;
+
 
 }
