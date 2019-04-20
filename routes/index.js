@@ -5,7 +5,7 @@ var router = express.Router();
 router.get('/', function(req, res, next) {
   res.render('lobby',{
     title: 'Colabor8',
-    sessionID = req.sessionID
+    sessionID : req.sessionID
   });
 });
 
@@ -15,7 +15,7 @@ router.get('/rooms/:id',function(req, res){
   res.render('room', {
     title: 'Colabor8',
     roomID: req.params.id,
-    sessionID = req.sessionID
+    sessionID : req.sessionID
   });
 });
 

@@ -27,31 +27,81 @@ io.on('connection',function(client){
     //listens for join event from client side
     client.on('join',function(data){
         //name and roomID
-        console.log('socket joining room id ',data.roomID);
         client.join(data.roomID);
-        client.to(data.roomID).emit('join',data.name);
+        io.to(data.roomID).emit('join', data.name);
+
+
+        var newuser = {
+            username   : data.name,
+            roomID     : data.roomID,
+            sessionID  :  data.sessionID
+        };
+
+        mongo.connect(mongourl, function(err, client){
+            assert.equal(null,err);
+            //db created
+            var db = client.db('Colabor8');
+            db.collection("Usernames").insertOne(newuser, function(err,result){
+              assert.equal(null,err);
+              console.log('item inserted, ',newuser);
+              client.close();
+            });
+          });
     });
 
-    client.on('unsubscribe', function(data){
-        console.log('socket leaving room id ',data.roomID);
-        client.leave(data.roomID);
+    client.on('access-room', function(data, callback){
+        
+        var username_query = {
+            roomID      : data.roomID,
+            sessionID   : data.sessionID
+        }
+
+        mongo.connect(mongourl, function(err, client1){
+            assert.equal(null,err);
+            //db created
+            var db = client1.db('Colabor8');
+            db.collection("Usernames").findOne(username_query, function(err,username_found){
+                assert.equal(null,err);
+                client1.close();
+                callback(username_found);
+            });
+        });
+
+    })
+
+    client.on('check-username', function(data, callback){
+
+        var username_query = {
+            username    : data.name,
+            roomID      : data.roomID,
+        }
+
+        mongo.connect(mongourl, function(err, client1){
+            assert.equal(null,err);
+            //db created
+            var db = client1.db('Colabor8');
+            db.collection("Usernames").findOne(username_query, function(err,username_hit){
+                assert.equal(null,err);
+                client1.close();
+                callback(username_hit);
+            });
+        });
     })
 
     client.on('chat',function(data){
         //everyone BUT the person the client that sends the emit
-        console.log('printing the data',data);
         io.to(data.roomID).emit('chat',data)
 
     });
     //broadcasts to everyone but sender
     client.on('typing',function(data){
-        client.to(data.roomID).emit('typing',data.name);
+        client.to(data.roomID).emit('typing',data);
 
     });
 
     client.on('disconnect',function(member){
         console.log('Client disconnected');
-        io.sockets.emit('disconnect',member);
+        //io.sockets.emit('disconnect',member);
     });
 
     client.on('new-room',function(callback){

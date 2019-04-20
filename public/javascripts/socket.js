@@ -30,8 +30,8 @@
     url = document.URL;
     var username;
 
-    
-    getUsername();
+    //getUsername();
+    initRoom();
     joinRoom();
     loadIssues();
 
@@ -41,6 +41,24 @@
     console.log('leaving window')
     //socket.emit('unsubscribe',roomID);
     socket.close();
+  }
+
+  function initRoom(){
+
+    socket.emit('access-room', {
+      roomID    : roomID,
+      sessionID : sessionID
+    }, function(data){
+      if(data){
+        name = data.username;
+      }
+      else{
+        getUsername();
+      }
+
+    })
+
+
   }
 
   function getUsername(){
@@ -55,17 +73,22 @@
               name = result.trim();
               socket.emit('check-username', {
                 roomID    : roomID,
-                sessionID : sessionID
-              });
+                sessionID : sessionID,
+                name      : name
+              }, function(hit){
 
-              //socket.on('connect', function(){
-              console.log('connecting');
-              console.log('sending payload', data);
-              socket.emit('join',{
-                name      : name,
-                roomID    : roomID,
-                sessionID : sessionID
-              });                  
+                if(hit){
+                  bootbox.alert('Username already taken' + hit);
+                }
+                else{
+                  console.log('connecting');
+                  socket.emit('join',{
+                    name      : name,
+                    roomID    : roomID,
+                    sessionID : sessionID
+                  });    
+                }
+              });                           
           }
       }
     });
@@ -308,7 +331,7 @@
   });
 
   socket.on('typing', function(data){
-    feedback.innerHTML = '<p><em>' + data + ' is typing a message...</em></p>';
+    feedback.innerHTML = '<p><em>' + data.name + ' is typing a message...</em></p>';
   });
 
   input.addEventListener('keypress',function(){
