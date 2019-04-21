@@ -21,6 +21,20 @@
     return false;
   });
 
+  $('#chat-form').submit(function () {
+    if(input.value != ''){
+      socket.emit('chat', {
+        message: input.value,
+        name: name,
+        roomID: roomID
+      })
+    }
+    //reset text
+    input.value = '';
+
+    return false;
+  });
+
 
   window.onload = ()=>{
     //loadIssues();
@@ -28,7 +42,6 @@
 
   $(document).ready(function(){
     url = document.URL;
-    var username;
 
     //getUsername();
     initRoom();
@@ -47,15 +60,18 @@
       roomID    : roomID,
       sessionID : sessionID
     }
+    //check if user has signed in already
     socket.emit('access-room', send, function(data){
 
       console.log('got call back :', send, data)
+      //user signed in
       if(data != null){
         socket.emit('reconnect-user', data, function() {
           console.log('reconnected');
           name = data.username;
         })
       }
+      //prompt for username
       else{
         getUsername();
       }
@@ -169,21 +185,6 @@
     });
     
   }
-
-  send.addEventListener('click',function(event){
-    if(input.value != ''){
-      socket.emit('chat', {
-        message: input.value,
-        name: name,
-        roomID: roomID
-      })
-
-      event.preventDefault();
-    }
-
-    //reset text
-    input.value = '';
-  });
 
   socket.on('typing', function(data){
     feedback.innerHTML = '<p><em>' + data.name + ' is typing a message...</em></p>';
