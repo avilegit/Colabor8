@@ -79,7 +79,7 @@
               }, function(hit){
 
                 if(hit){
-                  bootbox.alert('Username already taken ' + hit.username, function(){
+                  bootbox.alert('Username already taken: ' + hit.username, function(){
                     getUsername();
                   });
                 }
@@ -170,13 +170,15 @@
     
   }
 
-  send.addEventListener('click',function(){
+  send.addEventListener('click',function(event){
     if(input.value != ''){
       socket.emit('chat', {
         message: input.value,
         name: name,
         roomID: roomID
       })
+
+      event.preventDefault();
     }
 
     //reset text
