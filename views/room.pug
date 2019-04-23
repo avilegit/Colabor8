@@ -17,8 +17,13 @@ block scripts
 block content
   #nav
       nav.navbar.navbar-dark.bg-dark
-        a.navbar-brand(href = "/") #{title}
-        a.navbar-text(id = 'roomID') ##{roomID}
+        //- .container-fluid
+        .navbar-header
+          a.navbar-brand(href = "/") #{title}
+          p.navbar-text ##{roomID}
+          //- ul.navbar-nav
+          //-   li.nav-item
+          //-     a.nav-link ##{roomID}
         form(id = "searchform").form-inline
           select#IssueSearchType.custom-select
             option(selected='description' value='description') Title
