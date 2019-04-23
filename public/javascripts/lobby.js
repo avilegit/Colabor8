@@ -5,9 +5,9 @@ $(document).ready(function () {
     //socket = io();
     io = null;
 
-    socket.emit('request-num-users');
 
-    socket.on('num-users', function (numUsers) {
+
+    socket.emit('num-users-request', function(numUsers){
         $('#users').empty();
         if (numUsers === "1") {
             $('#users').append(numUsers + " person online");

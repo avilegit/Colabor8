@@ -22,11 +22,16 @@ const mongourl = 'mongodb://localhost:27017/Colabor8'
 const uuidv1 = require('uuid/v1');
 
 var assert = require('assert');
+var numUsers = 0;
 
 io.on('connection',function(client){
     console.log('Client connected', client.id);
-
+    numUsers++;
     //listens for join event from client side
+
+    client.on('num-users-request',function(callback){
+        callback(numUsers);
+    });
     client.on('new-user',function(data){
         //name and roomID
         client.join(data.roomID);
@@ -112,6 +117,7 @@ io.on('connection',function(client){
 
     client.on('disconnect',function(member){
         console.log('Client disconnected');
+        numUsers--;
         //io.sockets.emit('disconnect',member);
     });
 
