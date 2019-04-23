@@ -88,6 +88,10 @@
     width: 100%;
 
 }
+
+.bootbox .modal-header {
+    flex-direction: row-reverse;
+}
 body {
     padding-top: 0px;
 }

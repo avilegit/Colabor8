@@ -81,7 +81,7 @@
 
   function getUsername(){
     bootbox.prompt({
-      title: "Enter a username",
+      title: "Enter a <b>username</b>",
       value: "",
       callback: function (result) {
           if (result === null || result === "") {
@@ -238,6 +238,7 @@ function loadIssues(){
                                   '<div class="card-body">' +
                                   '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
                                   '<p><i class="fas fa-door-closed"></i>' + ' '+ status + '</p>'+
+                                  '<p><i class="fas fa-calendar-day"></i>' + ' '+ dueDate + '</p>'+
                                   '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
                                   '<a href="#" onclick="flipStatus(\''+issuesID  + '\',\'' + status + '\')" class="btn btn-primary">Reopen</a> '+
                                   '<a href="#" onclick="deleteIssue(\''+issuesID+'\')" class="btn btn-danger">Delete</a>'+
@@ -249,11 +250,9 @@ function loadIssues(){
       }
     }
     else{
-      $('#issue-list').append('<li class="list-group-item">' + '<div class="card">' + '<div class="card text-white bg-success mb-3">' +
-                                  '<div class="card-body">' + 
-                                  '<h5 class="card-title">' + 'No issues!' + '</h5>' + 
+      $('#issue-list').append('<li class="list-group-item">' + '<div class="card text-white bg-success mb-3">' +
+                                  '<div class="card-body">' +  'No issues!' +
                                   '</div>' +                                                       
-                                  '</div>' + 
                                   '</div>' + '</li>');
     }
   });
