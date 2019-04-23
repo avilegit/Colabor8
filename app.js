@@ -15,46 +15,282 @@ var debug = require('debug')('colabor8:server');
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 
+var session = require('express-session');
 
+const mongo = require('mongodb').MongoClient
+const mongourl = 'mongodb://localhost:27017/Colabor8'
 const uuidv1 = require('uuid/v1');
 
-
-/*var MongoClient = require('mongodb').MongoClient;
-MongoClient.connect("mongodb://localhost:3000/exampleDb", function(err, db) {
-    if(!err) {
-    console.log("We are connected");
-    }
-});*/
+var assert = require('assert');
+var numUsers = 0;
 
 io.on('connection',function(client){
     console.log('Client connected', client.id);
-
+    numUsers++;
     //listens for join event from client side
-    client.on('join',function(data){
-        io.sockets.emit('join', data);
+
+    client.on('num-users-request',function(callback){
+        callback(numUsers);
     });
+    client.on('new-user',function(data){
+        //name and roomID
+        client.join(data.roomID);
+        io.to(data.roomID).emit('join', data.name);
+        client.sessionID = data.sessionID;
+
+        var newuser = {
+            username   : data.name,
+            roomID     : data.roomID,
+            sessionID  :  data.sessionID
+        };
+
+        mongo.connect(mongourl, function(err, client){
+            assert.equal(null,err);
+            //db created
+            var db = client.db('Colabor8');
+            db.collection("Usernames").insertOne(newuser, function(err,result){
+              assert.equal(null,err);
+              console.log('item inserted, ',newuser);
+              client.close();
+            });
+          });
+    });
+
+    client.on('reconnect-user', function(data,callback){
+
+        console.log('reconneting the user, ', data);
+        client.join(data.roomID);
+        io.to(data.roomID).emit('join', data.username);
+        client.sessionID = data.sessionID;
+        callback();
+    })
+
+    client.on('access-room', function(data, callback){
+        
+        var username_query = {
+            roomID      : data.roomID,
+            sessionID   : data.sessionID
+        }
+
+        mongo.connect(mongourl, function(err, client1){
+            assert.equal(null,err);
+            //db created
+            var db = client1.db('Colabor8');
+            db.collection("Usernames").findOne(username_query, function(err,username_found){
+                assert.equal(null,err);
+                client1.close();
+                callback(username_found);
+            });
+        });
+
+    })
+
+    client.on('check-username', function(data, callback){
+
+        var username_query = {
+            username    : data.name,
+            roomID      : data.roomID,
+        }
+
+        mongo.connect(mongourl, function(err, client1){
+            assert.equal(null,err);
+            //db created
+            var db = client1.db('Colabor8');
+            db.collection("Usernames").findOne(username_query, function(err,username_hit){
+                assert.equal(null,err);
+                client1.close();
+                callback(username_hit);
+            });
+        });
+    })
 
     client.on('chat',function(data){
         //everyone BUT the person the client that sends the emit
-        io.sockets.emit('chat',data)
+        io.to(data.roomID).emit('chat',data)
 
     });
     //broadcasts to everyone but sender
     client.on('typing',function(data){
-        client.broadcast.emit('typing',data);
+        client.to(data.roomID).emit('typing',data);
 
     });
 
     client.on('disconnect',function(member){
         console.log('Client disconnected');
-        io.sockets.emit('disconnect',member);
+        numUsers--;
+        //io.sockets.emit('disconnect',member);
     });
 
-    client.on('newIssue',function(client_callback){
-        console.log('new UUID');
-        var id = uuidv1();
-        client_callback(id);
+    client.on('new-room',function(callback){
+        console.log('got room request');
+        var room_id = uuidv1();
+        room_id_trunc = room_id.substring(0,8)
+
+        var roomobj = {
+            id: room_id_trunc,
+            active : 1
+        };
+
+        mongo.connect(mongourl, function(err, client){
+            assert.equal(null,err);
+            //db created
+            var db = client.db('Colabor8');
+            db.collection("Rooms").insertOne(roomobj, function(err,result){
+              assert.equal(null,err);
+              console.log('item inserted, ',roomobj);
+              client.close();
+            });
+          });
+        //can be done async
+        callback(room_id_trunc);
+    })
+
+    client.on('room-join-request', function(data, callback){
+        var requestID = data.roomID;
+
+        console.log('got a request id', requestID);
+
+        mongo.connect(mongourl, function(err, client1){
+            assert.equal(null,err);
+            //db created
+            var db = client1.db('Colabor8');
+            db.collection("Rooms").findOne({id : requestID}, function(err,room_hit){
+                assert.equal(null,err);
+                
+                client1.close();
+                
+                callback(room_hit);
+
+            });
+        });
+
     });
+    client.on('newIssue', function(data, callback){
+
+        var id = uuidv1();
+        var newIssue = {
+            description     : data.description,
+            severity        : data.severity,
+            assignedTo      : data.assignedTo,
+            assignedBy      : data.assignedBy,
+            issueStatus     : data.issueStatus,
+            dueDate         : data.dueDate,
+            issueDescription: data.issueDescription,
+            uuid            : id,
+            roomID          : data.roomID
+        };
+
+        //send back to client
+        mongo.connect(mongourl, function(err, client1){
+            assert.equal(null,err);
+            //db created
+            var db = client1.db('Colabor8');
+            db.collection("Issues").insertOne(newIssue, function(err,result){
+            assert.equal(null,err);
+            console.log('item inserted, ',newIssue);
+            client1.close();
+            client.broadcast.emit('reload-issues');
+            });
+        });
+        
+        //can send this back asynchronously, dont need to wait for mongo to insert
+        callback(id);
+    })
+
+    client.on('getIssues', function(data, callback){
+
+        var issues;
+        mongo.connect(mongourl, function(err, client){
+            assert.equal(null,err);
+            //db created
+            var db = client.db('Colabor8');
+            //search for issues by roomID
+            db.collection("Issues").find({roomID: data}).toArray(function(err,result){
+            assert.equal(null,err);
+            console.log('all items, ',result);
+            issues = result;
+            client.close();
+
+            //synchronous send
+            callback(issues);
+            });
+        });
+
+    })
+
+    client.on('searchIssues', function(data,callback){
+
+        var search_string   =  Object.values(data)[0];
+        var search_type     = Object.keys(data)[0];
+        var regex_search_string = '^' + search_string;
+        var query = {
+            [search_type]   : new RegExp(regex_search_string, 'i'),
+            roomID          : data.roomID
+        };
+        console.log(query);
+        //var query = {[key]: {$regex:val}};
+
+        mongo.connect(mongourl, function(err, client1){
+            assert.equal(null,err);
+            //db created
+            var db = client1.db('Colabor8');
+            db.collection("Issues").find(query).toArray(function(err,result){
+                assert.equal(null,err);
+                console.log('query:, ',result);
+                client1.close();
+                callback(result);
+            });
+        });
+    })
+    
+    client.on('updateStatus', function(data,callback){
+        var status_ = data.status;
+        if(status_ == "Open"){status_ = "Closed";}
+        else{status_ = "Open";}
+      
+        var query= {
+            uuid    : data.uuid,
+            roomID  : data.roomID
+        };
+      
+        mongo.connect(mongourl, function(err, client1){
+            assert.equal(null,err);
+            //db created
+            var db = client1.db('Colabor8');
+            db.collection("Issues").updateOne(query,{$set: {issueStatus: status_}},function(err,result){
+                assert.equal(null,err);
+                client1.close();
+
+                client.broadcast.emit('reload-issues');
+                callback();
+                
+            });
+        });
+    })
+
+    client.on('deleteIssue', function(data, callback){
+
+        //lazy ass fix
+        mongo.connect(mongourl, function(err, client1){
+            assert.equal(null,err);
+        
+            var query = {
+                uuid    : data.uuid,
+                roomID  : data.roomID
+            };
+
+            //db created
+            var db = client1.db('Colabor8');
+            console.log('this is the query', query);
+            db.collection("Issues").deleteOne(query,function(err,result){
+              assert.equal(null,err);
+              client1.close();
+              //synchronous send
+              client.broadcast.emit('reload-issues');
+              callback();
+            });
+        });
+    })
 });
 
 server.listen(port);
@@ -70,6 +306,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(session({
+    // genid: function(req) {
+    //     return genuuid(); // use UUIDs for session IDs
+    //   },
+    // cookie:{
+    //     cookie: { secure: true }
+    // },
+    secret: 'LOLO LOLO',
+    resave: false,
+    saveUninitialized: true
+}));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
@@ -93,7 +341,14 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
+
+  
 });
+
+if (app.get('env') === 'production') {
+    app.set('trust proxy', 1) // trust first proxy
+    sess.cookie.secure = true // serve secure cookies
+  }
 
 ///wwwww stuff
 function onError(error) {

@@ -1,134 +1,260 @@
 (function(){
-  url = document.URL;
-  do{
-    var person = prompt("Enter your name", "");
-  }while(person == "");
 
-  if (person == null || person == "") {
-    name = "Anon";
-  } else {
-    name= person;
-  }
-  person = "";
-})();
+  var name;
+  //Query DOM
+  var windows = document.getElementById('chat-window'),
+      output = document.getElementById('output-chat'),
+      input = document.getElementById('chat-input'),
+      send = document.getElementById('chat-send'),
+      messages = document.getElementById('chat-messages'),
+      label = document.getElementById('test-label')
+      feedback = document.getElementById('feedback');
 
-$('#issueform').submit(function () {
-  newIssue();
-  //disable reload
-  return false;
- });
+  $('#issueform').submit(function () {
+    newIssue();
+    //disable reload
+    return false;
+  });
 
- $('#searchform').submit(function () {
+  $('#searchform').submit(function () {
+    issueSearch();
+    return false;
+  });
 
-  issueSearch();
-  return false;
+  $('#chat-form').submit(function () {
+    if(input.value != ''){
+      socket.emit('chat', {
+        message: input.value,
+        name: name,
+        roomID: roomID
+      })
+    }
+    //reset text
+    input.value = '';
 
- });
+    return false;
+  });
 
-//Query DOM
-var windows = document.getElementById('chat-window'),
-    output = document.getElementById('output-chat'),
-    input = document.getElementById('chat-input'),
-    send = document.getElementById('chat-send'),
-    messages = document.getElementById('chat-messages'),
-    label = document.getElementById('test-label')
-    feedback = document.getElementById('feedback');
 
-window.onload = ()=>{
-  loadIssues();
-}
-
-var socket = io.connect('http://localhost:3000')
-
-socket.on('connect', function(){
-  socket.emit('join',name);
-});
-
-//listen for client join events
-socket.on('join', function(new_member){
-  $('#chat-messages').append('<li class="list-group-item list-group-item-action list-group-item-warning">' + new_member + " joined!" + '</li>');
-})
-
-socket.on('disconnect', function(removed_member){
-  $('#chat-messages').append('<li class="list-group-item list-group-item-action list-group-item-warning">' + removed_member + " disconnected!" + '</li>');
-})
-
-socket.on('chat', function(data){
-  $('#chat-messages').append('<li class="list-group-item">' + data.name + ": " + data.message + '</li>');
-  feedback.innerHTML = '';
-  //reset text
-  input.value = '';
-})
-
-function newIssue(){
-  var i_description = document.getElementById('issueDescInput').value;
-  var i_severity = document.getElementById('IssueSeverityInput').value;
-  var i_assignedTo = document.getElementById('IssueAssignedToInput').value;
-  var i_assignedBy = name;
-  var i_issueDescription = document.getElementById('IssueDescriptionInput').value;
-  var i_issueStatus = 'Open';
-  
-  var newIssue = {
-    description : i_description,
-    severity : i_severity,
-    assignedTo : i_assignedTo,
-    assignedBy : i_assignedBy,
-    issueStatus : i_issueStatus,
-    issueDescription: i_issueDescription,
+  window.onload = ()=>{
+    //loadIssues();
   }
 
-  $.post("/newIssue/",newIssue,function(data){
+  $(document).ready(function(){
+    url = document.URL;
 
-      //callback
-      var i_issueID = data;
-      newIssue.issueID = i_issueID
-      
-      loadIssues();
+    //getUsername();
+    initRoom();
+    loadIssues();
 
-      document.getElementById('issueDescInput').value = '';
-      document.getElementById('IssueAssignedToInput').value = '';
-      document.getElementById('IssueDescriptionInput').value = '';
-    
-    });
-}
+  });
 
-function issueSearch(){
-  var _searchType = document.getElementById('IssueSearchType').value;
-  var _searchQuery = document.getElementById('issueSearch').value;
+  window.onunload = ()=>{
+    console.log('leaving window')
+    //socket.emit('unsubscribe',roomID);
+    socket.close();
+  }
 
-  var querypayload = {[_searchType]:_searchQuery};
+  function initRoom(){
+    send = {
+      roomID    : roomID,
+      sessionID : sessionID
+    }
+    //check if user has signed in already
+    socket.emit('access-room', send, function(data){
 
-  var query = {
-    payload:JSON.stringify({
-      [_searchType]:_searchQuery
+      console.log('got call back :', send, data)
+      //user signed in
+      if(data != null){
+        socket.emit('reconnect-user', data, function() {
+          console.log('reconnected');
+          name = data.username;
+        })
+      }
+      //prompt for username
+      else{
+        getUsername();
+      }
     })
-  };
 
-  $.post("/search", query, function(data){
+  }
 
-    issues = data;
-    loadsearchIssues(issues);
+  function getUsername(){
+    bootbox.prompt({
+      title: "Enter a <b>username</b>",
+      value: "",
+      callback: function (result) {
+          if (result === null || result === "") {
+              getUserName();
+          } else {
+              name = result.trim();
+              socket.emit('check-username', {
+                roomID    : roomID,
+                sessionID : sessionID,
+                name      : name
+              }, function(hit){
 
-  });
-  
-}
+                if(hit){
+                  bootbox.alert('Username already taken: ' + hit.username, function(){
+                    getUsername();
+                  });
+                }
+                else{
+                  console.log('connecting SESH ', sessionID);
+                  socket.emit('new-user',{
+                    name      : name,
+                    roomID    : roomID,
+                    sessionID : sessionID
+                  });    
+                }
+              });                           
+          }
+      }
+    });
+  }
 
-function flipStatus(ID_,status_){
-  var update_query = {
-    uuid: ID_,
-    status: status_
-  };
+  //listen for client join events
+  socket.on('join', function(new_member){
+    $('#chat-messages').append('<li class="list-group-item list-group-item-action list-group-item-warning">' + new_member + " joined!" + '</li>');
+  })
 
-  $.post("/updatestatus", update_query, function(data){
+  socket.on('disconnect', function(removed_member){
+    //$('#chat-messages').append('<li class="list-group-item list-group-item-action list-group-item-warning">' + removed_member + " disconnected!" + '</li>');
+  })
 
+  socket.on('chat', function(data){
+    console.log('egeogegege');
+    $('#chat-messages').append('<li class="list-group-item">' + data.name + ": " + data.message + '</li>');
+    feedback.innerHTML = '';
+  })
+
+  socket.on('reload-issues',function(){
     loadIssues();
-  });
-}
+  })
 
-function deleteIssue(ID){
-  var delete_query = {uuid: ID};
-  $.post("/deleteissue", delete_query, function(data){
-    loadIssues();
+  function newIssue(){
+    var i_description  = document.getElementById('issueDescInput').value;
+    var i_severity     = document.getElementById('IssueSeverityInput').value;
+    var i_assignedTo   = document.getElementById('IssueAssignedToInput').value;
+    var i_assignedBy   = name;
+    var i_dueDate      = document.getElementById('datepicker').value;
+    var i_issueDescription = document.getElementById('IssueDescriptionInput').value;
+    var i_issueStatus = 'Open';
+    
+    var newIssue = {
+      description     : i_description,
+      severity        : i_severity,
+      assignedTo      : i_assignedTo,
+      assignedBy      : i_assignedBy,
+      dueDate         : i_dueDate,
+      issueStatus     : i_issueStatus,
+      issueDescription: i_issueDescription,
+      roomID          : roomID,
+    }
+
+    socket.emit('newIssue', newIssue, function(data){
+    //$.post("/newIssue/",newIssue,function(data){
+
+        //callback
+        var i_issueID = data;
+        newIssue.issueID = i_issueID
+        
+        loadIssues();
+
+        document.getElementById('issueDescInput').value = '';
+        document.getElementById('IssueAssignedToInput').value = '';
+        document.getElementById('IssueDescriptionInput').value = '';
+        document.getElementById('datepicker').value = '';
+      });
+  }
+
+  function issueSearch(){
+    var _searchType = document.getElementById('IssueSearchType').value;
+    var _searchQuery = document.getElementById('issueSearch').value;
+
+    var querypayload = {
+      [_searchType] :_searchQuery,
+      roomID        : roomID
+    };
+
+    socket.emit('searchIssues',querypayload, function(issues){
+    //$.post("/search", query, function(data){
+
+      loadsearchIssues(issues);
+
+    });
+    
+  }
+
+  socket.on('typing', function(data){
+    feedback.innerHTML = '<p><em>' + data.name + ' is typing a message...</em></p>';
+  });
+
+  input.addEventListener('keypress',function(){
+    socket.emit('typing', {
+      name    : name,
+      roomID  : roomID
+    });
+  })
+
+})()
+
+function loadIssues(){
+  socket.emit('getIssues', roomID, function(Issues){
+  //$.get("/Issues/:{roomID}",function(Issues){
+    var issuesList = document.getElementById('issue-list');
+    issuesList.innerHTML = '';
+
+
+    if(Issues.length){
+      for (var i = 0; i < Issues.length; i++) {
+        var desc       = Issues[i].description;
+        var severity   = Issues[i].severity;
+        var assignedTo = Issues[i].assignedTo;
+        var assignedBy = Issues[i].assignedBy;
+        var status     = Issues[i].issueStatus;
+        var issuedesc  = Issues[i].issueDescription;
+        var issuesID   = Issues[i].uuid;
+        var dueDate    = Issues[i].dueDate;
+
+        if(status == 'Open'){
+          $('#issue-list').append('<li class="list-group-item">' + '<div class="card">' + 
+                                  '<div class="card-header">'+ '<h3><i class="far fa-comment-alt"></i>' + ' ' + desc + '</h3>' + '</div>' +
+                                  '<div class="card-body">' +
+                                  '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
+                                  '<p><i class="fas fa-door-open"></i>' + ' '+ status + '</p>'+
+                                  '<p><i class="fas fa-calendar-day"></i>' + ' '+ dueDate + '</p>'+
+                                  '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
+                                  '<a href="#" onclick="flipStatus(\''+issuesID  + '\',\'' + status + '\')" class="btn btn-success">Close</a> '+
+                                  '<a href="#" onclick="deleteIssue(\''+issuesID+'\')" class="btn btn-danger">Delete</a>'+
+                                  '</div>'+ 
+                                  '<div class="card-footer">' + issuedesc + 
+                                  '<p><i class="fas fa-user"></i>'+ ' assigned by: ' + assignedBy + '</div>' +                            
+                                  '</div>' + '</li>');
+        }
+        else{
+          $('#issue-list').append('<li class="list-group-item">' + '<div class="card text-white bg-success mb-3">' + 
+                                  '<div class="card-header">'+ '<h3><i class="far fa-comment-alt"></i>' + ' ' + desc + '</h3>' + '</div>' +
+                                  '<div class="card-body">' +
+                                  '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
+                                  '<p><i class="fas fa-door-closed"></i>' + ' '+ status + '</p>'+
+                                  '<p><i class="fas fa-calendar-day"></i>' + ' '+ dueDate + '</p>'+
+                                  '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
+                                  '<a href="#" onclick="flipStatus(\''+issuesID  + '\',\'' + status + '\')" class="btn btn-primary">Reopen</a> '+
+                                  '<a href="#" onclick="deleteIssue(\''+issuesID+'\')" class="btn btn-danger">Delete</a>'+
+                                  '</div>'+ 
+                                  '<div class="card-footer">' + issuedesc + 
+                                  '<p><i class="fas fa-user"></i>'+ ' assigned by: ' + assignedBy + '</div>' +                             
+                                  '</div>' + '</li>');
+        }
+      }
+    }
+    else{
+      $('#issue-list').append('<li class="list-group-item">' + '<div class="card text-white bg-success mb-3">' +
+                                  '<div class="card-body">' +  'No issues!' +
+                                  '</div>' +                                                       
+                                  '</div>' + '</li>');
+    }
   });
 }
 
@@ -144,6 +270,7 @@ function loadsearchIssues(Issues){
       var assignedTo = Issues[i].assignedTo;
       var assignedBy = Issues[i].assignedBy;
       var status = Issues[i].issueStatus;
+      var dueDate = Issues[i].dueDate;
       var issuedesc = Issues[i].issueDescription;
       var issuesID = Issues[i].uuid;
 
@@ -153,6 +280,7 @@ function loadsearchIssues(Issues){
                                 '<div class="card-body">' +
                                 '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
                                 '<p><i class="fas fa-door-open"></i>' + ' '+ status + '</p>'+
+                                '<p><i class="fas fa-door-open"></i>' + ' '+ dueDate + '</p>'+
                                 '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
                                 '<a href="#" onclick="flipStatus(\''+issuesID  + '\',\'' + status + '\')" class="btn btn-success">Close</a> '+
                                 '<a href="#" onclick="deleteIssue(\''+issuesID+'\')" class="btn btn-danger">Delete</a>'+
@@ -187,80 +315,30 @@ function loadsearchIssues(Issues){
   }
 }
 
+function flipStatus(ID_,status_){
+  var update_query = {
+    uuid: ID_,
+    status: status_,
+    roomID: roomID
+  };
 
-function loadIssues(){
-  $.get("/Issues",function(Issues){
-    var issuesList = document.getElementById('issue-list');
-    issuesList.innerHTML = '';
-
-
-    if(Issues.length){
-      for (var i = 0; i < Issues.length; i++) {
-        var desc = Issues[i].description;
-        var severity = Issues[i].severity;
-        var assignedTo = Issues[i].assignedTo;
-        var assignedBy = Issues[i].assignedBy;
-        var status = Issues[i].issueStatus;
-        var issuedesc = Issues[i].issueDescription;
-        var issuesID = Issues[i].uuid;
-
-        if(status == 'Open'){
-          $('#issue-list').append('<li class="list-group-item">' + '<div class="card">' + 
-                                  '<div class="card-header">'+ '<h3><i class="far fa-comment-alt"></i>' + ' ' + desc + '</h3>' + '</div>' +
-                                  '<div class="card-body">' +
-                                  '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
-                                  '<p><i class="fas fa-door-open"></i>' + ' '+ status + '</p>'+
-                                  '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
-                                  '<a href="#" onclick="flipStatus(\''+issuesID  + '\',\'' + status + '\')" class="btn btn-success">Close</a> '+
-                                  '<a href="#" onclick="deleteIssue(\''+issuesID+'\')" class="btn btn-danger">Delete</a>'+
-                                  '</div>'+ 
-                                  '<div class="card-footer">' + issuedesc + 
-                                  '<p><i class="fas fa-user"></i>'+ ' assigned by: ' + assignedBy + '</div>' +                            
-                                  '</div>' + '</li>');
-        }
-        else{
-          $('#issue-list').append('<li class="list-group-item">' + '<div class="card text-white bg-success mb-3">' + 
-                                  '<div class="card-header">'+ '<h3><i class="far fa-comment-alt"></i>' + ' ' + desc + '</h3>' + '</div>' +
-                                  '<div class="card-body">' +
-                                  '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
-                                  '<p><i class="fas fa-door-closed"></i>' + ' '+ status + '</p>'+
-                                  '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
-                                  '<a href="#" onclick="flipStatus(\''+issuesID  + '\',\'' + status + '\')" class="btn btn-primary">Reopen</a> '+
-                                  '<a href="#" onclick="deleteIssue(\''+issuesID+'\')" class="btn btn-danger">Delete</a>'+
-                                  '</div>'+ 
-                                  '<div class="card-footer">' + issuedesc + 
-                                  '<p><i class="fas fa-user"></i>'+ ' assigned by: ' + assignedBy + '</div>' +                             
-                                  '</div>' + '</li>');
-        }
-      }
-    }
-    else{
-      $('#issue-list').append('<li class="list-group-item">' + '<div class="card">' + '<div class="card text-white bg-success mb-3">' +
-                                  '<div class="card-body">' + 
-                                  '<h5 class="card-title">' + 'No issues!' + '</h5>' + 
-                                  '</div>' +                                                       
-                                  '</div>' + 
-                                  '</div>' + '</li>');
-    }
+  socket.emit('updateStatus',update_query, function(){
+  //$.post("/updatestatus", update_query, function(data){
+    loadIssues();
   });
 }
 
-socket.on('typing', function(data){
-  feedback.innerHTML = '<p><em>' + data + ' is typing a message...</em></p>';
-});
+function deleteIssue(ID){
+  var delete_query = {
+    uuid: ID,
+    roomID: roomID
+  };
 
-input.addEventListener('keypress',function(){
-  socket.emit('typing', name);
-})
-
-send.addEventListener('click',function(){
-  if(input.value != ''){
-    socket.emit('chat', {
-      message: input.value,
-      name: name
-    })
-  }
-});
+  socket.emit('deleteIssue',delete_query,function(){
+  //$.post("/deleteissue", delete_query, function(data){
+    loadIssues();
+  });
+}
 
 function checkSearch(){
 

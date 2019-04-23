@@ -6,9 +6,11 @@
     "start": "node ./app.js"
   },
   "dependencies": {
+    "bootbox": "^5.1.2",
     "cookie-parser": "^1.4.4",
     "debug": "~2.6.9",
     "express": "~4.16.0",
+    "express-session": "^1.16.1",
     "http-errors": "~1.6.2",
     "mongodb": "^3.2.3",
     "morgan": "^1.9.1",

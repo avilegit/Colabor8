@@ -1,0 +1,29 @@
+extends layout
+
+block styles
+    link(rel='stylesheet', href='/stylesheets/lobby.css')
+
+block scripts
+  script(type="text/javascript" src='/socket.io/socket.io.js') 
+
+  script('text/javascript').
+    var socket = io();
+
+block content
+    nav.navbar.navbar-dark.bg-dark.justify-content-between
+        a.navbar-brand(href = '/') #{title}
+        p#users.navbar-text
+    #window
+        .well(id='room-window')
+            form.form-group(action='' id='room-selection')  
+                .input-group.mb-3
+                    .input-group-prepend
+                        span#basic-addon.input-group-text #
+                    input.form-control(type='text' id='enter-room-text' maxlength ="8"  placeholder='Room ID' required)
+                    .input-group-prepend
+                        span.input-group-btn
+                    button.btn.btn-primary.button(id="enter-room-button") Enter room
+                    
+            button.btn.btn-primary.full-width(id="new-room-button") Create new room
+
+    script(type="text/javascript" src ='./javascripts/lobby.js')

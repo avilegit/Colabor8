@@ -1,0 +1,13 @@
+.navbar.navbar-dark.bg-dark .navbar-brand{
+    color: deepskyblue;
+    font-size:30px;
+}
+
+.well{
+    width: 40%;
+    margin: auto;
+    border-style:round;
+    border-width: 1px;
+
+
+}

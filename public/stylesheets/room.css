@@ -14,12 +14,19 @@
     color: deepskyblue;
     font-size:30px;
 }
+/* .navbar.navbar-dark.bg-dark .navbar-text{
+    color:white;
+} */
 .divider{
     height:15px;
 }
 #basic-addon {
     width:110px;
     text-align:left;
+}
+
+#datepicker {
+    text-align: left;
 }
 .input-group-text{
     width:110px;
@@ -37,7 +44,7 @@
     position: fixed;
     margin-top: 0.5em;
     bottom: 0;
-    right:28%;
+    right:38%;
     
 }
 #issue-window{
@@ -63,7 +70,7 @@
     margin-top: 0.5em;
 }
 #tracker{
-    width: 35%;
+    width: 25%;
     margin-left: 1em;
     margin-top: 0.8em;
     position: fixed;
@@ -80,6 +87,10 @@
 
     width: 100%;
 
+}
+
+.bootbox .modal-header {
+    flex-direction: row-reverse;
 }
 body {
     padding-top: 0px;
