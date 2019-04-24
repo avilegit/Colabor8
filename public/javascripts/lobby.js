@@ -5,8 +5,6 @@ $(document).ready(function () {
     //socket = io();
     io = null;
 
-
-
     socket.emit('num-users-request', function(numUsers){
         $('#users').empty();
         if (numUsers === "1") {
