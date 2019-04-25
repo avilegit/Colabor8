@@ -57,10 +57,12 @@ block content
       .input-group.mb-3
         .input-group-prepend
           span#basic-addon.input-group-text Due Date
-          input#datepicker(width = 310, readonly)
+          input.form-control(id ="datepicker")(readonly)
           script.
             $('#datepicker').datepicker({
-              uiLibrary: 'bootstrap4'
+              uiLibrary: 'bootstrap4',
+              autoclose: true
+
             });
 
       .input-group
