@@ -347,8 +347,7 @@ app.use(function(err, req, res, next) {
 
 if (app.get('env') === 'production') {
     app.set('trust proxy', 1) // trust first proxy
-    sess.cookie.secure = true // serve secure cookies
-  }
+ }
 
 ///wwwww stuff
 function onError(error) {
