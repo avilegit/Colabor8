@@ -25,7 +25,7 @@ var assert = require('assert');
 var numUsers = 0;
 
 io.on('connection',function(client){
-    console.log('Client connected', client.id);
+    console.log('Client connected: ', client.id);
     numUsers++;
     //listens for join event from client side
 
