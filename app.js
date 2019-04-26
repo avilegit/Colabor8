@@ -18,7 +18,7 @@ var io = require('socket.io')(server);
 var session = require('express-session');
 
 const mongo = require('mongodb').MongoClient;
-const mongourl = "mongodb+srv://avenon:Chaitanya!@cluster0-eoytp.mongodb.net/test?retryWrites=true" || 'mongodb://localhost:27017/Colabor8';
+const mongourl = "mongodb+srv://avenon:Chaitanya@cluster0-eoytp.mongodb.net/test?retryWrites=true" || 'mongodb://localhost:27017/Colabor8';
 const uuidv1 = require('uuid/v1');
 
 var assert = require('assert');
