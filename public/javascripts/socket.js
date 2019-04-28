@@ -123,7 +123,6 @@
   })
 
   socket.on('chat', function(data){
-    console.log('egeogegege');
     $('#chat-messages').append('<li class="list-group-item">' + data.name + ": " + data.message + '</li>');
     feedback.innerHTML = '';
   })
@@ -212,7 +211,6 @@ function loadIssues(){
 
   socket.emit('getIssues', queryOpenIssues, function(popenIssues){
     var issuesList = document.getElementById('issue-list');
-
     issuesList.innerHTML = '';
 
     if(popenIssues.length){
@@ -263,7 +261,6 @@ function loadIssues(){
 
   socket.emit('getIssues', queryClosedIssues, function(pclosedIssues){
     var completeList = document.getElementById('complete-list');
-
     completeList.innerHTML = '';
 
     if(pclosedIssues.length){
@@ -304,9 +301,10 @@ function loadIssues(){
 }
 
 function loadsearchIssues(Issues){
-  var issuesList = document.getElementById('issue-list');
-  issuesList.innerHTML = '';
-
+  var completeList        = document.getElementById('complete-list');
+  var issuesList          = document.getElementById('issue-list');
+  issuesList.innerHTML    = '';
+  completeList.innerHTML  = '';
 
   if(Issues.length){
     for (var i = 0; i < Issues.length; i++) {
