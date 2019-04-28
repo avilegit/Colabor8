@@ -17,15 +17,15 @@ var io = require('socket.io')(server);
 
 var session = require('express-session');
 
-const mongo = require('mongodb').MongoClient
-const mongourl = 'mongodb://localhost:27017/Colabor8'
+const mongo = require('mongodb').MongoClient;
+const mongourl = process.env.MONGOLAB_URI || 'mongodb://localhost:27017/Colabor8';
 const uuidv1 = require('uuid/v1');
 
 var assert = require('assert');
 var numUsers = 0;
 
 io.on('connection',function(client){
-    console.log('Client connected', client.id);
+    console.log('Client connected: ', client.id);
     numUsers++;
     //listens for join event from client side
 
@@ -347,8 +347,7 @@ app.use(function(err, req, res, next) {
 
 if (app.get('env') === 'production') {
     app.set('trust proxy', 1) // trust first proxy
-    sess.cookie.secure = true // serve secure cookies
-  }
+ }
 
 ///wwwww stuff
 function onError(error) {

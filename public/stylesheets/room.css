@@ -25,9 +25,12 @@
     text-align:left;
 }
 
-#datepicker {
-    text-align: left;
+#datepicker,
+.table-condensed {
+  width: 200;
+  /* //height:40px; */
 }
+
 .input-group-text{
     width:110px;
     text-align:left;
