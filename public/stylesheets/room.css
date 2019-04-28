@@ -40,20 +40,35 @@
     margin-top: 0.5em;
 
 }
-#issues{
 
+/* #issueSearch{
+    width:100%;
+} */
+#issue-complete{
+    overflow-y: scroll;
     height: 90%;
-    width: 35%;
+    width: 23%;
     position: fixed;
     margin-top: 0.5em;
     bottom: 0;
-    right:38%;
+    left:48.5%;
     
 }
-#issue-window{
+#issue-assign{
+    /* overflow-y: scroll;
+    height: 90%;
+    margin-top: 0.5em; */
     overflow-y: scroll;
     height: 90%;
+    width: 23%;
+    position: fixed;
     margin-top: 0.5em;
+    bottom: 0;
+    left:25%;
+}
+
+#complete-list{
+    opacity: 0.8;
 }
 
 #chat {
@@ -88,7 +103,7 @@
 }
 .input-group{
 
-    width: 100%;
+    width: 90%;
 
 }
 

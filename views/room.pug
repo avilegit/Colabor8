@@ -13,11 +13,9 @@ block scripts
     var roomID = "#{roomID}";
     var sessionID = "#{sessionID}";
     var socket = io();
-     
 block content
   #nav
       nav.navbar.navbar-dark.bg-dark
-        //- .container-fluid
         .navbar-header
           a.navbar-brand(href = "/") #{title}
           p.navbar-text ##{roomID}
@@ -57,12 +55,11 @@ block content
       .input-group.mb-3
         .input-group-prepend
           span#basic-addon.input-group-text Due Date
-          input.form-control(id ="datepicker")(readonly)
+          input.form-control#datepicker(readonly)
           script.
             $('#datepicker').datepicker({
               uiLibrary: 'bootstrap4',
-              autoclose: true
-
+              //autoclose: true
             });
 
       .input-group
@@ -73,8 +70,12 @@ block content
       button.btn.btn-outline-success.my-2.my-sm-0(type = 'submit' id='issue-send') Add
 
   #issues
-    .panel.panel(id='issue-window')
+    .panel.panel(id='issue-assign')
       ul.list-group(id='issue-list')
+
+    .panel.panel(id='issue-complete')
+      ul.list-group(id='complete-list')
+
  
   #chat
     .panel.panel-success(id='chat-window')

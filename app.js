@@ -186,10 +186,10 @@ io.on('connection',function(client){
             //db created
             var db = client1.db('Colabor8');
             db.collection("Issues").insertOne(newIssue, function(err,result){
-            assert.equal(null,err);
-            console.log('item inserted, ',newIssue);
-            client1.close();
-            client.broadcast.emit('reload-issues');
+                assert.equal(null,err);
+                console.log('item inserted, ',newIssue);
+                client1.close();
+                client.broadcast.emit('reload-issues');
             });
         });
         
@@ -201,18 +201,25 @@ io.on('connection',function(client){
 
         var issues;
         mongo.connect(mongourl, function(err, client){
+
+
+
             assert.equal(null,err);
             //db created
             var db = client.db('Colabor8');
             //search for issues by roomID
-            db.collection("Issues").find({roomID: data}).toArray(function(err,result){
-            assert.equal(null,err);
-            console.log('all items, ',result);
-            issues = result;
-            client.close();
+            var query = {
+                roomID: data.roomID,
+                issueStatus: data.status
+            };
+            db.collection("Issues").find(query).toArray(function(err,result){
+                assert.equal(null,err);
+                console.log('all items, ',result);
+                issues = result;
+                client.close();
 
-            //synchronous send
-            callback(issues);
+                //synchronous send
+                callback(issues);
             });
         });
 
