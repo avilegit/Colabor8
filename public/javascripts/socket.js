@@ -123,7 +123,6 @@
   })
 
   socket.on('chat', function(data){
-    console.log('egeogegege');
     $('#chat-messages').append('<li class="list-group-item">' + data.name + ": " + data.message + '</li>');
     feedback.innerHTML = '';
   })
@@ -200,68 +199,112 @@
 })()
 
 function loadIssues(){
-  socket.emit('getIssues', roomID, function(Issues){
-  //$.get("/Issues/:{roomID}",function(Issues){
+
+// Querying open issues
+// 
+//   
+
+  var queryOpenIssues = {
+    roomID: roomID, 
+    status: 'Open'
+  };
+
+  socket.emit('getIssues', queryOpenIssues, function(popenIssues){
     var issuesList = document.getElementById('issue-list');
     issuesList.innerHTML = '';
 
-
-    if(Issues.length){
-      for (var i = 0; i < Issues.length; i++) {
-        var desc       = Issues[i].description;
-        var severity   = Issues[i].severity;
-        var assignedTo = Issues[i].assignedTo;
-        var assignedBy = Issues[i].assignedBy;
-        var status     = Issues[i].issueStatus;
-        var issuedesc  = Issues[i].issueDescription;
-        var issuesID   = Issues[i].uuid;
-        var dueDate    = Issues[i].dueDate;
-
-        if(status == 'Open'){
-          $('#issue-list').append('<li class="list-group-item">' + '<div class="card">' + 
-                                  '<div class="card-header">'+ '<h3><i class="far fa-comment-alt"></i>' + ' ' + desc + '</h3>' + '</div>' +
-                                  '<div class="card-body">' +
-                                  '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
-                                  '<p><i class="fas fa-door-open"></i>' + ' '+ status + '</p>'+
-                                  '<p><i class="fas fa-calendar-day"></i>' + ' '+ dueDate + '</p>'+
-                                  '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
-                                  '<a href="#" onclick="flipStatus(\''+issuesID  + '\',\'' + status + '\')" class="btn btn-success">Close</a> '+
-                                  '<a href="#" onclick="deleteIssue(\''+issuesID+'\')" class="btn btn-danger">Delete</a>'+
-                                  '</div>'+ 
-                                  '<div class="card-footer">' + issuedesc + 
-                                  '<p><i class="fas fa-user"></i>'+ ' assigned by: ' + assignedBy + '</div>' +                            
-                                  '</div>' + '</li>');
-        }
-        else{
-          $('#issue-list').append('<li class="list-group-item">' + '<div class="card text-white bg-success mb-3">' + 
-                                  '<div class="card-header">'+ '<h3><i class="far fa-comment-alt"></i>' + ' ' + desc + '</h3>' + '</div>' +
-                                  '<div class="card-body">' +
-                                  '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
-                                  '<p><i class="fas fa-door-closed"></i>' + ' '+ status + '</p>'+
-                                  '<p><i class="fas fa-calendar-day"></i>' + ' '+ dueDate + '</p>'+
-                                  '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
-                                  '<a href="#" onclick="flipStatus(\''+issuesID  + '\',\'' + status + '\')" class="btn btn-primary">Reopen</a> '+
-                                  '<a href="#" onclick="deleteIssue(\''+issuesID+'\')" class="btn btn-danger">Delete</a>'+
-                                  '</div>'+ 
-                                  '<div class="card-footer">' + issuedesc + 
-                                  '<p><i class="fas fa-user"></i>'+ ' assigned by: ' + assignedBy + '</div>' +                             
-                                  '</div>' + '</li>');
-        }
+    if(popenIssues.length){
+      for (var i = 0; i < popenIssues.length; i++) {
+        var desc       = popenIssues[i].description;
+        var severity   = popenIssues[i].severity;
+        var assignedTo = popenIssues[i].assignedTo;
+        var assignedBy = popenIssues[i].assignedBy;
+        var status     = popenIssues[i].issueStatus;
+        var issuedesc  = popenIssues[i].issueDescription;
+        var issuesID   = popenIssues[i].uuid;
+        var dueDate    = popenIssues[i].dueDate;
+       
+        $('#issue-list').append('<li class="list-group-item">' + '<div class="card bg-light mb-3">' +
+                                '<div class="card-header">'+ '<h3><i class="far fa-comment-alt"></i>' + ' ' + desc + '</h3>' + '</div>' +
+                                '<div class="card-body">' +
+                                '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
+                                '<p><i class="fas fa-door-open"></i>' + ' '+ status + '</p>'+
+                                '<p><i class="fas fa-calendar-day"></i>' + ' '+ dueDate + '</p>'+
+                                '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
+                                '<a href="#" onclick="flipStatus(\''+issuesID  + '\',\'' + status + '\')" class="btn btn-success">Close</a> '+
+                                '<a href="#" onclick="deleteIssue(\''+issuesID+'\')" class="btn btn-danger">Delete</a>'+
+                                '</div>'+ 
+                                '<div class="card-footer">' + issuedesc + 
+                                '<p><i class="fas fa-user"></i>'+ ' assigned by: ' + assignedBy + '</div>' +                            
+                                '</div>' + '</li>');
+      
       }
     }
     else{
-      $('#issue-list').append('<li class="list-group-item">' + '<div class="card text-white bg-success mb-3">' +
-                                  '<div class="card-body">' +  'No issues!' +
-                                  '</div>' +                                                       
-                                  '</div>' + '</li>');
+      $('#issue-list').append('<li class="list-group-item">' + '<div class="card text-white bg-primary mb-3">' +
+                                '<div class="card-body">' + 
+                                '<h5 class="card-title">' + 'No assigned issues' + '</h5>' +  
+                                '</div>' +                                                       
+                                '</div>' + '</li>');
+    }
+  });
+
+// Querying closed issues
+// 
+// 
+//   
+
+  var queryClosedIssues = {
+    roomID: roomID, 
+    status: 'Closed'
+  };
+
+  socket.emit('getIssues', queryClosedIssues, function(pclosedIssues){
+    var completeList = document.getElementById('complete-list');
+    completeList.innerHTML = '';
+
+    if(pclosedIssues.length){
+      for (var i = 0; i < pclosedIssues.length; i++) {
+        var desc       = pclosedIssues[i].description;
+        var severity   = pclosedIssues[i].severity;
+        var assignedTo = pclosedIssues[i].assignedTo;
+        var assignedBy = pclosedIssues[i].assignedBy;
+        var status     = pclosedIssues[i].issueStatus;
+        var issuedesc  = pclosedIssues[i].issueDescription;
+        var issuesID   = pclosedIssues[i].uuid;
+        var dueDate    = pclosedIssues[i].dueDate;
+
+        $('#complete-list').append('<li class="list-group-item">' + '<div class="card text-white bg-success mb-3">' + 
+                                '<div class="card-header">'+ '<h3><i class="far fa-comment-alt"></i>' + ' ' + desc + '</h3>' + '</div>' +
+                                '<div class="card-body">' +
+                                '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
+                                '<p><i class="fas fa-door-closed"></i>' + ' '+ status + '</p>'+
+                                '<p><i class="fas fa-calendar-day"></i>' + ' '+ dueDate + '</p>'+
+                                '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
+                                '<a href="#" onclick="flipStatus(\''+issuesID  + '\',\'' + status + '\')" class="btn btn-primary">Reopen</a> '+
+                                '<a href="#" onclick="deleteIssue(\''+issuesID+'\')" class="btn btn-danger">Delete</a>'+
+                                '</div>'+ 
+                                '<div class="card-footer">' + issuedesc + 
+                                '<p><i class="fas fa-user"></i>'+ ' assigned by: ' + assignedBy + '</div>' +                             
+                                '</div>' + '</li>');
+        
+      }
+    }
+    else{
+      $('#complete-list').append('<li class="list-group-item">' + '<div class="card text-white bg-success mb-3">' +
+                                '<div class="card-body">' + 
+                                '<h5 class="card-title">' + 'Completed jobs go here' + '</h5>' + 
+                                '</div>' +                                                       
+                                '</div>' + '</li>');
     }
   });
 }
 
 function loadsearchIssues(Issues){
-  var issuesList = document.getElementById('issue-list');
-  issuesList.innerHTML = '';
-
+  var completeList        = document.getElementById('complete-list');
+  var issuesList          = document.getElementById('issue-list');
+  issuesList.innerHTML    = '';
+  completeList.innerHTML  = '';
 
   if(Issues.length){
     for (var i = 0; i < Issues.length; i++) {
@@ -306,19 +349,18 @@ function loadsearchIssues(Issues){
     }
   }
   else{
-    $('#issue-list').append('<li class="list-group-item">' + '<div class="card">' + '<div class="card text-white bg-success mb-3">' +
+    $('#issue-list').append('<li class="list-group-item">' + '<div class="card text-white bg-success mb-3">' +
                                 '<div class="card-body">' + 
                                 '<h5 class="card-title">' + 'No issues found!' + '</h5>' + 
                                 '</div>' +                                                       
-                                '</div>' + 
                                 '</div>' + '</li>');
   }
 }
 
-function flipStatus(ID_,status_){
+function flipStatus(pID,pstatus){
   var update_query = {
-    uuid: ID_,
-    status: status_,
+    uuid: pID,
+    status: pstatus,
     roomID: roomID
   };
 
