@@ -8,3 +8,8 @@ jobs:
         - checkout
         - run: npm install
         - run: npm test
+        - run: 
+            name: Deploy Master to Heroku
+            command: git push https://heroku:a485dc6f-5977-4f7c-952e-429691198d38@git.heroku.com/colabor8-us.git master
+
+    
