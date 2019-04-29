@@ -41,7 +41,7 @@ block content
               .input-group.mb-3
                 .input-group-prepend
                   span#basic-addon.input-group-text Issue Title
-                input.form-control(id="issueDescInput" type='text', placeholder='Title', class="form-control" required)
+                input.form-control(id="issueDescInput" type='text', placeholder='Title', class="form-control", required)
 
               .input-group.mb-3
                 .input-group-prepend
@@ -59,7 +59,7 @@ block content
               .input-group.mb-3
                 .input-group-prepend
                   span#basic-addon.input-group-text(style ="width:132px") Due Date   
-                  input.form-control#datepicker(readonly)
+                  input.form-control#datepicker(placeholder = 'mm/dd/yyyy', required)
                   script.
                     $('#datepicker').datepicker({
                       uiLibrary: 'bootstrap4',

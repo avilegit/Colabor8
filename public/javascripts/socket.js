@@ -11,7 +11,13 @@
       feedback = document.getElementById('feedback');
 
   $('#issueform').submit(function () {
-    newIssue();
+    var validDate = checkValidDate(document.getElementById('datepicker').value);
+    if(validDate){
+      newIssue();
+    }
+    else{
+      bootbox.alert('enter valid due date in mm/dd/yyyy format');
+    }
     //disable reload
     return false;
   });
@@ -35,7 +41,30 @@
     return false;
   });
 
+  function checkValidDate(date){
+    if(!/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(date)){
+      return false;
+    }
+    // Parse the date parts to integers
+    var parts = date.split("/");
+    var day = parseInt(parts[1], 10);
+    var month = parseInt(parts[0], 10);
+    var year = parseInt(parts[2], 10);
 
+    if(year < 2019 || year > 2100 || month == 0 || month > 12){
+      return false;
+    }
+
+    var monthLength = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
+
+    // Adjust for leap years
+    if(year % 400 == 0 || (year % 100 != 0 && year % 4 == 0)){
+      monthLength[1] = 29;
+    }
+
+    // Check the range of the day
+    return (day > 0 && day <= monthLength[month - 1]);
+  }
   window.onload = ()=>{
     //loadIssues();
   }
@@ -50,7 +79,7 @@
   });
 
   window.onunload = ()=>{
-    console.log('leaving window')
+    console.log('leaving window');
     //socket.emit('unsubscribe',roomID);
     socket.close();
   }
@@ -371,14 +400,18 @@ function flipStatus(pID,pstatus){
 }
 
 function deleteIssue(ID){
-  var delete_query = {
-    uuid: ID,
-    roomID: roomID
-  };
 
-  socket.emit('deleteIssue',delete_query,function(){
-  //$.post("/deleteissue", delete_query, function(data){
-    loadIssues();
+  bootbox.confirm('Delete Issue?', function(confirm){
+    if(confirm){
+      var delete_query = {
+        uuid: ID,
+        roomID: roomID
+      };
+    
+      socket.emit('deleteIssue',delete_query,function(){
+        loadIssues();
+      });
+    }
   });
 }
 
