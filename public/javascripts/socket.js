@@ -1,6 +1,13 @@
+const dateProximity = { 
+  LATE    : 'late',
+  SOON    : 'soon',
+  NORMAL  : 'normal'
+};
+
 (function(){
 
   var name;
+  
   //Query DOM
   var windows = document.getElementById('chat-window'),
       output = document.getElementById('output-chat'),
@@ -51,7 +58,7 @@
     var month = parseInt(parts[0], 10);
     var year = parseInt(parts[2], 10);
 
-    if(year < 2019 || year > 2100 || month == 0 || month > 12){
+    if(year < 2015 || year > 2100 || month == 0 || month > 12){
       return false;
     }
 
@@ -253,20 +260,55 @@ function loadIssues(){
         var issuesID   = popenIssues[i].uuid;
         var dueDate    = popenIssues[i].dueDate;
        
-        $('#issue-list').append('<li class="list-group-item">' + '<div class="card bg-light mb-3">' +
-                                '<div class="card-header">'+ '<h3><i class="far fa-comment-alt"></i>' + ' ' + desc + '</h3>' + '</div>' +
-                                '<div class="card-body">' +
-                                '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
-                                '<p><i class="fas fa-door-open"></i>' + ' '+ status + '</p>'+
-                                '<p><i class="fas fa-calendar-day"></i>' + ' '+ dueDate + '</p>'+
-                                '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
-                                '<a href="#" onclick="flipStatus(\''+issuesID  + '\',\'' + status + '\')" class="btn btn-success">Close</a> '+
-                                '<a href="#" onclick="deleteIssue(\''+issuesID+'\')" class="btn btn-danger">Delete</a>'+
-                                '</div>'+ 
-                                '<div class="card-footer">' + issuedesc + 
-                                '<p><i class="fas fa-user"></i>'+ ' assigned by: ' + assignedBy + '</div>' +                            
-                                '</div>' + '</li>');
-      
+        var dateStatus = checkDueDateProximity(dueDate);
+
+        switch(dateStatus){
+          case dateProximity.LATE:
+            $('#issue-list').append('<li class="list-group-item">' + '<div class="card bg-light mb-3">' +
+                                  '<div class="card-header">'+ '<h3><i class="far fa-comment-alt"></i>' + ' ' + desc + '</h3>' + '</div>' +
+                                  '<div class="card-body">' +
+                                  '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
+                                  '<p><i class="fas fa-door-open"></i>' + ' '+ status + '</p>'+
+                                  '<p style="color:red"><i class="fas fa-calendar-day"></i>' + ' '+ dueDate + '</p>'+
+                                  '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
+                                  '<a href="#" onclick="flipStatus(\''+issuesID  + '\',\'' + status + '\')" class="btn btn-success">Close</a> '+
+                                  '<a href="#" onclick="deleteIssue(\''+issuesID+'\')" class="btn btn-danger">Delete</a>'+
+                                  '</div>'+ 
+                                  '<div class="card-footer">' + issuedesc + 
+                                  '<p><i class="fas fa-user"></i>'+ ' assigned by: ' + assignedBy + '</div>' +                            
+                                  '</div>' + '</li>');
+            break;                     
+          case dateProximity.SOON:
+            $('#issue-list').append('<li class="list-group-item">' + '<div class="card bg-light mb-3">' +
+                                    '<div class="card-header">'+ '<h3><i class="far fa-comment-alt"></i>' + ' ' + desc + '</h3>' + '</div>' +
+                                    '<div class="card-body">' +
+                                    '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
+                                    '<p><i class="fas fa-door-open"></i>' + ' '+ status + '</p>'+
+                                    '<p style="color:orange"><i class="fas fa-calendar-day"></i>' + ' '+ dueDate + '</p>'+
+                                    '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
+                                    '<a href="#" onclick="flipStatus(\''+issuesID  + '\',\'' + status + '\')" class="btn btn-success">Close</a> '+
+                                    '<a href="#" onclick="deleteIssue(\''+issuesID+'\')" class="btn btn-danger">Delete</a>'+
+                                    '</div>'+ 
+                                    '<div class="card-footer">' + issuedesc + 
+                                    '<p><i class="fas fa-user"></i>'+ ' assigned by: ' + assignedBy + '</div>' +                            
+                                    '</div>' + '</li>');
+            break;
+          case dateProximity.NORMAL:
+            $('#issue-list').append('<li class="list-group-item">' + '<div class="card bg-light mb-3">' +
+                                      '<div class="card-header">'+ '<h3><i class="far fa-comment-alt"></i>' + ' ' + desc + '</h3>' + '</div>' +
+                                      '<div class="card-body">' +
+                                      '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
+                                      '<p><i class="fas fa-door-open"></i>' + ' '+ status + '</p>'+
+                                      '<p><i class="fas fa-calendar-day"></i>' + ' '+ dueDate + '</p>'+
+                                      '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
+                                      '<a href="#" onclick="flipStatus(\''+issuesID  + '\',\'' + status + '\')" class="btn btn-success">Close</a> '+
+                                      '<a href="#" onclick="deleteIssue(\''+issuesID+'\')" class="btn btn-danger">Delete</a>'+
+                                      '</div>'+ 
+                                      '<div class="card-footer">' + issuedesc + 
+                                      '<p><i class="fas fa-user"></i>'+ ' assigned by: ' + assignedBy + '</div>' +                            
+                                      '</div>' + '</li>');
+            break;
+        }
       }
     }
     else{
@@ -303,6 +345,7 @@ function loadIssues(){
         var issuesID   = pclosedIssues[i].uuid;
         var dueDate    = pclosedIssues[i].dueDate;
 
+      
         $('#complete-list').append('<li class="list-group-item">' + '<div class="card text-white bg-success mb-3">' + 
                                 '<div class="card-header">'+ '<h3><i class="far fa-comment-alt"></i>' + ' ' + desc + '</h3>' + '</div>' +
                                 '<div class="card-body">' +
@@ -316,7 +359,6 @@ function loadIssues(){
                                 '<div class="card-footer">' + issuedesc + 
                                 '<p><i class="fas fa-user"></i>'+ ' assigned by: ' + assignedBy + '</div>' +                             
                                 '</div>' + '</li>');
-        
       }
     }
     else{
@@ -367,6 +409,7 @@ function loadsearchIssues(Issues){
                                 '<div class="card-body">' +
                                 '<p><i class="fas fa-user"></i>'+ ' ' + assignedTo + '</p>'+
                                 '<p><i class="fas fa-door-closed"></i>' + ' '+ status + '</p>'+
+                                '<p><i class="fas fa-door-open"></i>' + ' '+ dueDate + '</p>'+
                                 '<p><i class="fas fa-exclamation-triangle"></i>' + ' ' + severity + '</p>'+
                                 '<a href="#" onclick="flipStatus(\''+issuesID  + '\',\'' + status + '\')" class="btn btn-primary">Reopen</a> '+
                                 '<a href="#" onclick="deleteIssue(\''+issuesID+'\')" class="btn btn-danger">Delete</a>'+
@@ -385,6 +428,29 @@ function loadsearchIssues(Issues){
                                 '</div>' + '</li>');
   }
 }
+
+function checkDueDateProximity(pDueDate){
+  // var parts = pDueDate.split("/");
+  // var day = parseInt(parts[1], 10);
+  // var month = parseInt(parts[0], 10);
+  // var year = parseInt(parts[2], 10);
+  var oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
+  var dateInput = new Date(pDueDate);
+  var today = new Date();
+
+  var diffDays = Math.round(Math.abs((dateInput.getTime() - today.getTime())/(oneDay)));
+
+  if (dateInput < today) {
+    return dateProximity.LATE;
+  }
+  else if(diffDays < 5 && diffDays > 0){
+    return dateProximity.SOON;
+  }
+  else{
+    return dateProximity.NORMAL;
+  }
+}
+
 
 function flipStatus(pID,pstatus){
   var update_query = {
