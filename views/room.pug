@@ -33,48 +33,52 @@ block content
           input.form-control.mr-sm-2(id='issueSearch',type='search', placeholder='Search', aria-label='Search',autocomplete = "off", oninput = "checkSearch()")
           button.btn.btn-outline-success.my-2.my-sm-0(type='submit' id='issue-search-submit') Search
   #tracker
-    form(id = "issueform")
-      .input-group.mb-3
-        .input-group-prepend
-          span#basic-addon.input-group-text Issue Title
-        input.form-control(id="issueDescInput" type='text', placeholder='Title', class="form-control" required)
+    .bootstrap-iso
+      .container-fluid
+        .row
+          .col-md-12.col-sm-6.col-xs-12
+            form(id = "issueform")
+              .input-group.mb-3
+                .input-group-prepend
+                  span#basic-addon.input-group-text Issue Title
+                input.form-control(id="issueDescInput" type='text', placeholder='Title', class="form-control", required)
 
-      .input-group.mb-3
-        .input-group-prepend
-          span#basic-addon.input-group-text Assigned To
-        input.form-control(id="IssueAssignedToInput" type='text', placeholder='Username', aria-label='Username', aria-describedby='basic-addon1', required)
+              .input-group.mb-3
+                .input-group-prepend
+                  span#basic-addon.input-group-text Assigned To
+                input.form-control(id="IssueAssignedToInput" type='text', placeholder='Username', aria-label='Username', aria-describedby='basic-addon1', required)
 
-      .input-group.mb-3
-        .input-group-prepend
-          label.input-group-text(for='inputGroupSelect01') Severity
-        select#IssueSeverityInput.custom-select
-          option(selected='Low') Low
-          option(value='Medium') Medium
-          option(value='High') High
-      
-      .input-group.mb-3
-        .input-group-prepend
-          span#basic-addon.input-group-text Due Date
-          input.form-control#datepicker(readonly)
-          script.
-            $('#datepicker').datepicker({
-              uiLibrary: 'bootstrap4',
-              //autoclose: true
-            });
+              .input-group.mb-3
+                .input-group-prepend
+                  label.input-group-text(for='inputGroupSelect01') Severity
+                select#IssueSeverityInput.custom-select
+                  option(selected='Low') Low
+                  option(value='Medium') Medium
+                  option(value='High') High
+              
+              .input-group.mb-3
+                .input-group-prepend
+                  span#basic-addon.input-group-text(style ="width:132px") Due Date   
+                  input.form-control#datepicker(placeholder = 'mm/dd/yyyy', required)
+                  script.
+                    $('#datepicker').datepicker({
+                      uiLibrary: 'bootstrap4',
+                      //autoclose: true
+                    });
 
-      .input-group
-        .input-group-prepend
-          span.input-group-text Description
-        textarea#IssueDescriptionInput.form-control(aria-label='With textarea')
-      .divider
-      button.btn.btn-outline-success.my-2.my-sm-0(type = 'submit' id='issue-send') Add
+              .input-group
+                .input-group-prepend
+                  span.input-group-text Description
+                textarea#IssueDescriptionInput.form-control(aria-label='With textarea')
+              .divider
+              button.btn.btn-outline-success.my-2.my-sm-0(type = 'submit' id='issue-send') Add
 
   #issues
     .panel.panel(id='issue-assign')
       ul.list-group(id='issue-list')
 
     .panel.panel(id='issue-complete')
-      ul.list-group(id='complete-list')
+      ul.list-group(id='complete-list') 
  
   #chat
     .panel.panel-success(id='chat-window')
