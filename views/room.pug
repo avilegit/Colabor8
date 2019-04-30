@@ -74,12 +74,16 @@ block content
               button.btn.btn-outline-success.my-2.my-sm-0(type = 'submit' id='issue-send') Add
 
   #issues
-    .panel.panel(id='issue-assign')
-      ul.list-group(id='issue-list')
+    .bootstrap-iso
+        .container-fluid
+          .row
+            .col-md-12.col-sm-6.col-xs-12
+              .panel.panel(id='issue-assign')
+                ul.list-group(id='issue-list')
 
-    .panel.panel(id='issue-complete')
-      ul.list-group(id='complete-list') 
- 
+              .panel.panel(id='issue-complete')
+                ul.list-group(id='complete-list') 
+          
   #chat
     .panel.panel-success(id='chat-window')
       .feedback(id='feedback')
